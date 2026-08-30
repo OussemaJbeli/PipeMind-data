@@ -1699,53 +1699,85 @@ In local mode, sensitive logs never leave the organization's infrastructure.
 
 # 39. Suggested Technical Architecture
 
-A possible implementation could be:
+The implemented architecture separates the **application layer** from the **intelligence layer**, each in the language best suited to it:
 
 ```text
 Frontend:
-React / Vue
+Vue 3 + TypeScript + Vite + Tailwind CSS
 
-Backend:
-Python FastAPI
+Backend (application / orchestration):
+Laravel 12 + PHP 8.3
+  - authentication, teams, projects
+  - CI/CD integrations and webhooks
+  - queues, orchestration, persistence
+  - REST API, policy and execution boundary
 
-AI:
-Gemini API
+AI Service (intelligence only):
+Python 3.11 + FastAPI
+  - log processing and secret redaction
+  - failure classification
+  - embeddings and similarity search
+  - RAG and LLM reasoning
+
+LLM providers:
+Gemini API (cloud)
 +
-Ollama
+Ollama (local)
+via a provider abstraction
 
 ML:
 Python
 scikit-learn
-PyTorch (if required)
-
-Big Data:
-Apache Kafka
-Apache Spark
+sentence-transformers
 
 Database:
-PostgreSQL
+PostgreSQL 16
 
 Vector search:
 pgvector
 
-Containers:
-Docker
+Cache / Queue:
+Redis 7
 
-Deployment:
-Docker Compose / Kubernetes
+Object storage (raw logs):
+MinIO / S3
+
+Containers:
+Docker + Docker Compose
+
+Real-time:
+Laravel Reverb (WebSockets)
 
 CI/CD integrations:
 GitLab
 GitHub Actions
 Jenkins
+Generic webhook
 
 Monitoring:
 Prometheus
 Grafana
 
 Authentication:
-JWT / OAuth
+Laravel Sanctum (SPA cookies + bearer tokens)
 ```
+
+### Why two backend languages?
+
+Laravel owns application state, integrations, queues, permissions and the execution
+boundary for automated actions. Python owns the intelligence: its ecosystem for NLP,
+embeddings, machine learning and LLM integration has no equivalent in PHP.
+
+The two communicate over a versioned internal HTTP contract. The AI service holds no
+application state and never receives infrastructure credentials.
+
+### On Kafka and Spark
+
+An earlier draft proposed Apache Kafka and Apache Spark for log ingestion. At this
+project's data volume, Redis-backed queues and PostgreSQL handle the load without the
+operational cost of a streaming cluster. Distributed processing is documented as a
+scaling path rather than implemented, so that complexity is added when the data
+justifies it rather than in anticipation.
 
 The exact technology choices can be changed according to the project's constraints.
 

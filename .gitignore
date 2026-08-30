@@ -1,0 +1,13 @@
+datasets/raw/**/*.log
+datasets/raw/**/*.jsonl
+datasets/raw/**/*.zip
+!datasets/raw/.gitkeep
+!datasets/raw/**/.gitkeep
+*.env
+.env
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+.DS_Store
+/.idea
