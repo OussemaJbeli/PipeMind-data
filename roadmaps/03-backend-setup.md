@@ -746,15 +746,15 @@ This must produce exactly what `ui/workspace.png` and `ui/project.png` show. Bui
 
 ```php
 // spec — database/seeders/DemoSeeder.php
-// 1. User: Oussema <PmAG01@evoxai.ca>, password "password", role owner
-// 2. Team: "Evox AI", plan free, privacy_mode cloud_redacted
+// 1. User: Oussema <jbelioussema33@gmail.com>, password "123456789az", role owner
+// 2. Team: "OJ Team", plan free, privacy_mode cloud_redacted
 // 3. Integration: GitLab @ http://gitlab.local, status active
 // 4. AiProvider: Gemini Flash, is_default, with realistic per-1k costs
 // 5. Four projects matching the mockup exactly:
-//      biker-api    Laravel · Docker · GitLab   98% · 2 failures today · 124 pipelines
-//      biker-front  Vue · TypeScript · GitLab   94% · 1 failure today  ·  87 pipelines
-//      biker-mobile React Native · Docker · GitLab 91% · 3 failures today · 63 pipelines
-//      biker-admin  Laravel · Docker · GitLab   97% · 0 failures today ·  56 pipelines
+//      biker-api    Laravel · Docker · GitHub   98% · 2 failures today · 124 pipelines
+//      biker-front  Vue · TypeScript · GitHub   94% · 1 failure today  ·  87 pipelines
+//      biker-mobile React Native · Docker · GitHub 91% · 3 failures today · 63 pipelines
+//      biker-admin  Laravel · Docker · GitHub   97% · 0 failures today ·  56 pipelines
 // 6. Per project: 60 days of pipelines at the stated success rate, 6 jobs each,
 //    stages: checkout → install → lint → test → build → deploy
 // 7. Failures across all 13 categories, weighted realistically:

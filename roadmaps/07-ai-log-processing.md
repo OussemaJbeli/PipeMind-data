@@ -605,4 +605,65 @@ php artisan tinker --execute="
 - [ ] A real ingested failure has an excerpt, an error block, and a signature
 - [ ] Two runs of the same failure produce the **same** `signature_hash` and `occurrence_count = 2`
 
+---
+
+## What differed from the plan when this was built
+
+**A git SHA and an AWS secret are both 40 characters.** The `aws_secret` rule
+(`[A-Za-z0-9/+=]{40}`) ate every commit hash in the log — the single most useful
+token there is. Fixed with a lookahead that excludes all-hex runs, since AWS
+secrets are base64 and mix case. The entropy exclusion list alone was not enough:
+this rule fires before the entropy stage.
+
+**Meaningful numbers were being normalised away.** `SQLSTATE[2002]` (cannot
+connect) and `SQLSTATE[1045]` (access denied) both became `sqlstate[<num>]` and
+shared one signature, one cache entry and one history — two completely different
+failures with completely different fixes. Same for HTTP 401 vs 500, and exit 1
+vs exit 137 (OOM-kill). `MEANINGFUL_NUMBER` now parks bracketed codes, HTTP
+statuses and exit codes behind a sentinel before the generic rule runs.
+
+**Line numbers normalised inconsistently.** The generic rule only catches 3+
+digits, so `:42` survived while `:915` became `<num>` — the same bug on two
+different lines produced two different signatures. Added explicit line-number
+rules after the path rule.
+
+**Marker family order matters more than the roadmap said, and for a second
+reason.** The first family to match decides the ecosystem, and the ecosystem is
+part of the signature hash. Two bugs followed from getting it wrong:
+
+- `SQLSTATE` was claimed by the `php` family, which was anchored to line start.
+  An indented occurrence fell through to `db`, so the *same error* got a
+  different ecosystem — and a different hash — depending on whitespace. SQLSTATE
+  is an ANSI SQL code and now lives only in `db`; every anchor tolerates leading
+  whitespace.
+- Go's `FAIL\s+\S+` matched PHPUnit and Pest output, handing every PHP test log
+  the `go` ecosystem. Go's pattern now requires its own markers (`panic:`,
+  `--- FAIL:`, or a package plus a duration).
+
+Families are now ordered strictly by explanatory power: `resource` → `db` →
+`network` → `k8s` → `docker` → `node` → language runtimes → `test` → `generic`.
+
+**Redaction was 81% of total processing time** — 23 regex passes over a
+multi-megabyte log, most of which could never match. A literal `prefilter` on
+each rule (a substring check against one lowercased copy) gates 22 of 23 rules
+and cut a 50k-line log from 1391 ms to ~400 ms. Redaction itself went from
+1136 ms to 174 ms.
+
+**`_last_meaningful` could return nothing.** It required lines longer than ten
+characters, so a log ending in short lines produced no `error_message` at all.
+It now falls back to the last non-empty non-echo line whatever its length.
+
+**Measured, not estimated:**
+
+| Log | Reduction | Root cause kept | Time |
+|---|---|---|---|
+| 1k lines | 99.0% | yes | 8 ms |
+| 10k lines | 99.9% | yes | 75 ms |
+| 50k lines | 100.0% | yes | ~400 ms |
+
+Root-cause retention 5/5. The roadmap's "< 250 ms for a 10 MB log" was
+optimistic; ~400 ms for 2.8 MB is the real figure, and it is fine for a queued
+job where the model call costs several seconds.
+
+
 **Next:** [`08-ai-classification.md`](08-ai-classification.md)

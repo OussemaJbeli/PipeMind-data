@@ -106,12 +106,12 @@ Column **Role** = minimum team role.
 // GET /auth/me
 {
   "data": {
-    "uuid": "…", "name": "Oussema", "email": "PmAG01@evoxai.ca",
+    "uuid": "…", "name": "Oussema", "email": "jbelioussema33@gmail.com",
     "avatar_url": null, "initials": "OU", "theme": "dark",
     "timezone": "Africa/Tunis", "onboarded_at": "2026-08-30T09:12:00Z",
-    "current_team": { "uuid": "…", "name": "Evox AI", "slug": "evox-ai", "role": "owner",
+    "current_team": { "uuid": "…", "name": "OJ Team", "slug": "oj-team", "role": "owner",
                       "plan": "free", "privacy_mode": "cloud_redacted" },
-    "teams": [ { "uuid": "…", "name": "Evox AI", "role": "owner", "projects_count": 4 } ],
+    "teams": [ { "uuid": "…", "name": "OJ Team", "role": "owner", "projects_count": 4 } ],
     "permissions": ["projects.manage","remediation.approve","team.manage","policies.edit"]
   }
 }
@@ -706,7 +706,7 @@ curl -s localhost:8000/api/v1/health             # {"status":"ok",...}
 # full happy path against seeded data
 TOKEN=$(curl -s -X POST localhost:8000/api/v1/auth/login \
   -H 'Content-Type: application/json' \
-  -d '{"email":"PmAG01@evoxai.ca","password":"password"}' | jq -r '.data.token')
+  -d '{"email":"jbelioussema33@gmail.com","password":"password"}' | jq -r '.data.token')
 
 curl -s localhost:8000/api/v1/workspace/summary  -H "Authorization: Bearer $TOKEN" | jq .
 curl -s localhost:8000/api/v1/workspace/projects -H "Authorization: Bearer $TOKEN" | jq '.data[0]'

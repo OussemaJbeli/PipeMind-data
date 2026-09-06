@@ -24,6 +24,7 @@ Derived from [`../roadmap.md`](../roadmap.md) (the strategic phases). This folde
 | 03 | [`03-backend-setup.md`](03-backend-setup.md) | back | Laravel 12, migrations, models, factories, seeders, Horizon | 02 |
 | 04 | [`04-backend-auth-api.md`](04-backend-auth-api.md) | back | Sanctum auth, teams, RBAC, workspace + project endpoints | 03 |
 | 05 | [`05-backend-ingestion.md`](05-backend-ingestion.md) | back | Provider adapters, webhooks, normalization, queue jobs, log storage | 04 |
+| 05b | [`05b-integration-layer.md`](05b-integration-layer.md) | back + front | CI/CD connection wizard, repo import, webhook re-registration | 05, 14 |
 | 06 | [`06-ai-service-setup.md`](06-ai-service-setup.md) | ai | FastAPI service, dependencies, config, Docker, contract | 05 |
 | 07 | [`07-ai-log-processing.md`](07-ai-log-processing.md) | ai | Redaction, log processor, signature generation | 06 |
 | 08 | [`08-ai-classification.md`](08-ai-classification.md) | ai + data | Rule engine, dataset, ML training + evaluation scripts | 07 |

@@ -218,9 +218,11 @@ CREATE TABLE pipeline_stages (
     pipeline_id      BIGINT NOT NULL REFERENCES pipelines(id) ON DELETE CASCADE,
     name             VARCHAR(120) NOT NULL,
     position         SMALLINT NOT NULL DEFAULT 0,
+    -- Includes 'timeout': a stage rolls up to its worst job, and pipelines and
+    -- pipeline_jobs both allow it. The three must agree.
     status           VARCHAR(20) NOT NULL DEFAULT 'pending'
                      CHECK (status IN ('pending','running','success','failed',
-                                       'canceled','skipped','manual')),
+                                       'canceled','skipped','manual','timeout')),
     started_at       TIMESTAMPTZ,
     finished_at      TIMESTAMPTZ,
     duration_seconds INTEGER,
@@ -358,6 +360,9 @@ CREATE TABLE failures (
     job_name                   VARCHAR(190),
     error_message              TEXT,
     error_type                 VARCHAR(120),
+    -- Detected by the AI service and folded into the signature hash; stored so
+    -- retrieval can compose the same embedding input at analysis time.
+    ecosystem                  VARCHAR(30),
     exit_code                  SMALLINT,
     is_flaky                   BOOLEAN NOT NULL DEFAULT FALSE,
     is_transient               BOOLEAN NOT NULL DEFAULT FALSE,

@@ -1,0 +1,202 @@
+# PipeMind lab — deliberate failure generator for GitHub Actions.
+#
+# Copy to .github/workflows/pipemind-lab.yml in a repository PipeMind monitors,
+# then run it from the Actions tab and pick a failure mode.
+#
+# Every mode produces a REAL log from a real runner using real tooling — which
+# is what makes it useful training data. A hand-written log only teaches a
+# classifier what a person thinks npm output looks like.
+#
+# NO HEREDOCS HERE, deliberately: a YAML block scalar requires its content to be
+# indented, while bash `<<'X'` requires the terminator at column 0. Both cannot
+# hold at once — indent the terminator and the heredoc never closes; dedent it
+# and the YAML no longer parses. Files are written with printf instead.
+name: PipeMind Lab
+
+on:
+  workflow_dispatch:
+    inputs:
+      fail_mode:
+        description: Which failure to produce
+        required: true
+        default: none
+        type: choice
+        options:
+          - none
+          - dependency-conflict
+          - dependency-missing
+          - database-refused
+          - database-auth
+          - test-assertion
+          - typecheck
+          - network-dns
+          - out-of-memory
+          - env-missing
+          - permission-denied
+          - docker-build
+          - flaky
+
+env:
+  FAIL_MODE: ${{ inputs.fail_mode || 'none' }}
+
+jobs:
+  install:
+    name: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          echo "fail_mode=$FAIL_MODE"
+
+          case "$FAIL_MODE" in
+            dependency-conflict)
+              # Real ERESOLVE from real npm: vue-router@4 requires Vue 3.
+              npm init -y > /dev/null
+              npm install --save --no-audit --no-fund vue@2.7.16 > /dev/null
+              npm install --save --no-audit --no-fund vue-router@4
+              ;;
+            dependency-missing)
+              npm init -y > /dev/null
+              npm install --no-audit --no-fund this-package-does-not-exist-pipemind-lab
+              ;;
+            env-missing)
+              if [ -z "${REQUIRED_SECRET:-}" ]; then
+                echo "ERROR: required environment variable REQUIRED_SECRET is not set"
+                exit 1
+              fi
+              ;;
+            permission-denied)
+              touch /tmp/locked
+              chmod 000 /tmp/locked
+              cat /tmp/locked
+              ;;
+            *)
+              echo "install ok"
+              ;;
+          esac
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    needs: install
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lab
+          POSTGRES_PASSWORD: lab
+          POSTGRES_DB: lab
+        # Deliberately NO health check: `database-refused` relies on connecting
+        # before Postgres finishes starting, which is the single most common
+        # real-world CI database failure — and the one in the mockups.
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run tests
+        run: |
+          case "$FAIL_MODE" in
+            database-refused)
+              sudo apt-get install -y -qq postgresql-client > /dev/null 2>&1
+              echo "Connecting to database..."
+              # Wrong port on purpose: a genuine libpq connection error.
+              PGPASSWORD=lab psql -h localhost -p 5433 -U lab -d lab -c 'select 1'
+              ;;
+
+            database-auth)
+              sudo apt-get install -y -qq postgresql-client > /dev/null 2>&1
+              PGPASSWORD=definitely-wrong psql -h localhost -p 5432 -U lab -d lab -c 'select 1'
+              ;;
+
+            test-assertion)
+              printf '%s\n' \
+                "import assert from 'node:assert/strict'" \
+                "import { test } from 'node:test'" \
+                "" \
+                "test('home page responds', () => {" \
+                "  assert.equal(200, 200)" \
+                "})" \
+                "" \
+                "test('login returns a token for valid credentials', () => {" \
+                "  const received = 401" \
+                "  assert.equal(received, 200, 'Expected status 200, Received status ' + received)" \
+                "})" \
+                > lab.test.mjs
+              node --test lab.test.mjs
+              ;;
+
+            typecheck)
+              npm init -y > /dev/null
+              npm install --no-audit --no-fund typescript > /dev/null
+              mkdir -p src
+              printf '%s\n' \
+                "export function tokenFor(user: { name?: string }): string {" \
+                "  // user.name is string | undefined, but sign() requires a string." \
+                "  return sign(user.name)" \
+                "}" \
+                "" \
+                "function sign(value: string): string {" \
+                "  return value.toUpperCase()" \
+                "}" \
+                > src/auth.ts
+              npx tsc --strict --noEmit src/auth.ts
+              ;;
+
+            network-dns)
+              curl --fail --max-time 8 https://this-host-does-not-exist.pipemind.invalid/
+              ;;
+
+            out-of-memory)
+              # Real V8 heap exhaustion.
+              node --max-old-space-size=64 -e "const a=[];for(;;)a.push(Buffer.alloc(1048576));"
+              ;;
+
+            flaky)
+              # Passes or fails on the SAME commit — exactly what is_flaky looks
+              # for, and something a single run cannot demonstrate.
+              if [ $(( RANDOM % 2 )) -eq 0 ]; then
+                echo "FAIL flaky.test.ts — timed out waiting for element"
+                exit 1
+              fi
+              echo "flaky test passed this time"
+              ;;
+
+            *)
+              echo "all tests passed"
+              ;;
+          esac
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          case "$FAIL_MODE" in
+            docker-build)
+              printf '%s\n' \
+                "FROM alpine:latest" \
+                "RUN echo installing dependencies" \
+                "RUN this-command-does-not-exist" \
+                > Dockerfile.lab
+              docker build -f Dockerfile.lab .
+              ;;
+            *)
+              echo "build ok"
+              ;;
+          esac

@@ -46,3 +46,80 @@ publishing a port, because 5432 was already bound. The container was healthy, bu
 would have connected to the host PostgreSQL — no pgvector, no PipeMind schema — and
 appeared almost-working while being entirely wrong. Always verify `docker compose ps`
 shows a real `PORTS` value, not an empty column.
+
+---
+
+## `similarity_threshold` is 0.55, not 0.75
+
+The roadmap's starting guess of 0.75 returns **zero rows** on realistic CI failures.
+Across ten pairs the highest cosine similarity observed was 0.5865, so the guess made
+retrieval silently return nothing at all — no error, no log, no failing test, just an
+always-empty "similar failures" panel that is indistinguishable from a workspace with
+no history yet.
+
+Lowered to 0.55 and marked provisional. Full method, pair matrix and limitations in
+[`experiments/similarity-threshold.md`](../../experiments/similarity-threshold.md).
+
+Two settings must be kept in step: `SIMILARITY_THRESHOLD` in `PipeMind-ai/.env` (the
+authoritative one, used by the query) and `pipemind.analysis.similarity_threshold` in
+Laravel (display only).
+
+## `find_similar_failures` ranks same-category neighbours above closer ones
+
+Ordering is `resolved DESC, same_category DESC, distance`. Embeddings put two Node
+failures near each other because they are both Node — in the pair matrix a Node database
+error and a Node dependency error scored 0.5865, outranking the genuinely same-cause pair
+at 0.5772. Category as a ranking key removes that artefact.
+
+A hard `WHERE category = :category` filter was considered and rejected: a Docker failure
+can genuinely present as a database symptom, and a hard filter makes that case unreachable.
+
+## `failures.ecosystem` is stored, not re-derived
+
+The AI service detects the ecosystem while processing a log and folds it into the
+signature hash, but nothing persisted it — it was passed to `DetectFailure` and dropped.
+At analysis time the embedding therefore could not be composed the same way the signature
+was hashed, and retrieval quietly lost a dimension of context.
+
+Added as a column on `failures` rather than on `failure_signatures`, because not every
+failure has a signature (a failure with no error text never gets one) and the
+embedding path needs the value per failure without a join.
+
+## Tenancy for models with no `team_id`
+
+`pipelines` and `pipeline_jobs` belong to a team only through their project, so `TeamScope`
+has no column to filter on. Route model binding would resolve **any** team's UUID — and
+`GET /jobs/{job}/log` returns log content, the most sensitive data in the system.
+
+`Concerns\ScopedThroughProject` overrides `resolveRouteBinding` to constrain through the
+project relation. Deliberately *not* a global scope: queued jobs and webhook ingestion
+legitimately run with no team bound, and a global scope would make them silently return
+nothing.
+
+## The cache's warm path must respect feedback
+
+`AnalysisCache::forget()` deletes the Redis key, but `get()` also has a database fallback
+that looks for a recent confident analysis of the same signature. Without an exclusion,
+purging the cache after a developer marks an analysis wrong achieves nothing — the very
+next lookup resurrects the rejected analysis out of `analyses`.
+
+`get()` now excludes any analysis carrying feedback with `was_helpful = false` or
+`root_cause_correct = false`.
+
+## `Http::preventStrayRequests()` in `Tests\TestCase`
+
+An unfaked HTTP call used to reach the real network. On a machine running the AI service
+on :8001 the suite passed or failed depending on what happened to be running locally —
+three ingestion tests were silently talking to the live Python service. Tests that depend
+on the outside world are not tests.
+
+## Risk is assigned from `action_type`, in code
+
+`recommender.sanitize()` overwrites whatever risk the model proposed, using the
+`ACTION_RISK` table, and escalates one level on the default branch. A model asked politely
+to be careful can still label a production rollback "low risk"; the policy engine that
+decides what runs automatically must not depend on that politeness.
+
+A test asserts `ACTION_RISK`'s keys equal the schema's `action_type` enum, because drift
+there is silent: an action the schema allows but the table does not know degrades to
+`manual` and quietly discards what the model proposed.
