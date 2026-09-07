@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate schema & contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # This repo is the reference the other three are checked against, so the
+      # only thing CI can usefully assert is that the reference itself parses.
+      - name: Contract schemas are valid JSON Schema
+        run: |
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          failures = []
+
+          for path in sorted(Path('contracts/v1').glob('*.json')):
+              try:
+                  schema = json.loads(path.read_text())
+              except json.JSONDecodeError as exc:
+                  failures.append(f'{path}: invalid JSON — {exc}')
+                  continue
+
+              # Every exported schema describes an object with properties. A file
+              # missing those is a truncated or half-written export.
+              if schema.get('type') != 'object' or 'properties' not in schema:
+                  failures.append(f'{path}: not an object schema with properties')
+
+          print(f'checked {len(list(Path("contracts/v1").glob("*.json")))} schema file(s)')
+
+          if failures:
+              print('\n'.join(failures), file=sys.stderr)
+              sys.exit(1)
+          PY
+
+      - name: Schema SQL parses as one statement stream
+        run: |
+          python - <<'PY'
+          import re, sys
+          from pathlib import Path
+
+          sql = Path('database/schema.sql').read_text()
+          tables = re.findall(r'CREATE TABLE (\w+)', sql)
+
+          # Unbalanced parentheses mean a hand-edit truncated a definition, which
+          # is the failure mode that makes schema-check disagree with reality.
+          if sql.count('(') != sql.count(')'):
+              print('unbalanced parentheses in schema.sql', file=sys.stderr)
+              sys.exit(1)
+
+          if len(tables) != len(set(tables)):
+              print('duplicate CREATE TABLE names', file=sys.stderr)
+              sys.exit(1)
+
+          print(f'{len(tables)} tables declared')
+          PY
+
+      - name: Experiment reports are present
+        run: |
+          # The evaluation report in roadmap 23 is assembled from these. A
+          # missing one is a number that quietly stops being reproducible.
+          for f in prompt-v1 similarity-threshold log-processing-v1 anomaly-v1; do
+            test -f "experiments/$f.md" || { echo "::error::experiments/$f.md is missing"; exit 1; }
+          done
+          echo "all experiment reports present"

@@ -1,6 +1,6 @@
 # Analysis prompt — v1
 
-**Frozen:** 2026-09-06 · **Template:** `PipeMind-ai/app/prompts/analyze.j2` ·
+**Frozen:** 2026-09-06 · **Measured against Gemini:** 2026-09-06 · **Template:** `PipeMind-ai/app/prompts/analyze.j2` ·
 **System prompt + schema:** `PipeMind-ai/app/services/prompts.py`
 
 Recorded so that a later change in analysis quality can be attributed to the
@@ -69,19 +69,80 @@ OpenAI-compatible). Invalid JSON becomes impossible rather than handled. Ollama
 has no such guarantee, so `salvage_json()` covers bare, fenced and prose-wrapped
 output there.
 
-## Measurements to fill in on real data
+## Measurements — first real Gemini run
 
-Deliberately left blank — the numbers belong to the run, not the design.
+**Measured 2026-09-06** · `gemini-3.6-flash`, `thinking_level=low`, 7 real failures
+spanning 7 categories, one analysis each, service warm.
 
-| Metric | Target | v1 |
+| Metric | Target | v1 measured |
 |---|---|---|
-| Analysis latency p50 | < 6 s | — |
-| Cost per analysis | < $0.01 | — |
-| Evidence items with a valid `source_ref` | 100% | — |
-| Invalid JSON from a schema-constrained provider | 0 | — |
-| Root cause judged correct on the 5 fixtures | 5/5 | — |
+| Analysis latency p50 | < 6 s | **4.14 s** ✓ |
+| Analysis latency min / max | — | 3.11 s / 6.76 s |
+| Cost per analysis (mean) | < $0.01 | **$0.001495** ✓ |
+| Cost per analysis (max) | < $0.01 | $0.001993 ✓ |
+| Evidence items with a valid `source_ref` | 100% | **15/15** ✓ |
+| Invalid JSON from a schema-constrained provider | 0 | **0** ✓ |
+| LLM category agreed with the rule classifier | — | **7/7** |
+| Prompt size | — | 522–660 tokens |
 
-Fill these in after the first real Gemini runs, then compare against v2.
+Per-category detail:
+
+| Ingest category | LLM category | Latency | Cost | in/out tokens | Evidence | Recos |
+|---|---|---|---|---|---|---|
+| NETWORK | NETWORK | 4140 ms | $0.001317 | 522 / 464 | 2 | 1 |
+| BUILD | BUILD | 6759 ms | $0.001609 | 556 / 577 | 2 | 2 |
+| TEST | TEST | 5846 ms | $0.001986 | 587 / 724 | 3 | 2 |
+| DOCKER | DOCKER | 3706 ms | $0.001221 | 636 / 412 | 2 | 1 |
+| DATABASE | DATABASE | 5065 ms | $0.001993 | 609 / 724 | 2 | 2 |
+| DEPENDENCY | DEPENDENCY | 3793 ms | $0.001406 | 660 / 483 | 2 | 1 |
+| CONFIGURATION | CONFIGURATION | 3111 ms | $0.000933 | 552 / 307 | 2 | 1 |
+
+Cost is **6.7× under budget**, which makes the caching layer a convenience rather
+than a necessity at this scale — worth stating plainly rather than overselling it.
+
+### Grounding held
+
+Every citation was checked against the input by hand for the DATABASE case:
+
+- `DatabaseTest.php:42` — present in the log excerpt ✓
+- `docker-compose.yml` — present in `changed_files` ✓
+- `SQLSTATE[HY000] [2002] Connection refused` — present in the log excerpt ✓
+
+Nothing was invented. The model also volunteered an explicit `OBSERVED: … INFERRED: …`
+split inside `explanation` without being asked to structure it that way — the
+system prompt's second rule reached the output.
+
+### `thinking_level` is the whole latency story
+
+Gemini 3.x reasons before answering, and those tokens are billed as output while
+never appearing in the response. On one fixture:
+
+| thinking_level | Latency | Thinking tokens | Valid JSON |
+|---|---|---|---|
+| `high` | 16.4 s | 2330 | yes |
+| unset (default) | 11.1 s | 1462 | yes |
+| **`low`** | **3.2 s** | **0** | yes |
+
+`low` is the default in `GEMINI_THINKING_LEVEL`. CI failure analysis is a
+short-context, heavily-grounded task where the rule classifier has already
+narrowed the category — the extra reasoning buys little here. Raise it for a
+project whose failures are genuinely ambiguous.
+
+Counting thinking tokens as output matters: excluding them understated cost by
+roughly 4× at the default level. `GeminiProvider` now adds
+`thoughts_token_count` into `completion_tokens`.
+
+### Caveats
+
+- Seven failures, one run each. p50 from n=7 is indicative, not a distribution.
+- All seven are seeded fixtures with clean, short logs. Real 5000-line logs will
+  push prompt tokens and latency up.
+- Rates in `ai_providers` are placeholders (input $0.0003/1k, output $0.0025/1k)
+  and must be checked against https://ai.google.dev/pricing. Every cost figure
+  above scales linearly with them.
+- One run hit `429 RESOURCE_EXHAUSTED` on the free tier. That path is handled
+  (`LLMRateLimited`, retryable, with backoff), but free-tier quota — not the
+  monthly budget — is the first ceiling this project will actually meet.
 
 ## Known limitations of v1
 

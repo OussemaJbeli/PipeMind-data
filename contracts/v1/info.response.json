@@ -1,0 +1,61 @@
+{
+  "properties": {
+    "contract_version": {
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "database": {
+      "title": "Database",
+      "type": "boolean"
+    },
+    "embedding_dim": {
+      "title": "Embedding Dim",
+      "type": "integer"
+    },
+    "embedding_model": {
+      "title": "Embedding Model",
+      "type": "string"
+    },
+    "embeddings_ready": {
+      "default": false,
+      "title": "Embeddings Ready",
+      "type": "boolean"
+    },
+    "llm_provider": {
+      "title": "Llm Provider",
+      "type": "string"
+    },
+    "llm_ready": {
+      "title": "Llm Ready",
+      "type": "boolean"
+    },
+    "providers": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "default": {},
+      "title": "Providers",
+      "type": "object"
+    },
+    "service": {
+      "default": "pipemind-ai",
+      "title": "Service",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "contract_version",
+    "llm_provider",
+    "llm_ready",
+    "embedding_model",
+    "embedding_dim",
+    "database"
+  ],
+  "title": "ServiceInfo",
+  "type": "object"
+}

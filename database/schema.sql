@@ -300,6 +300,11 @@ CREATE TABLE commit_changes (
     old_path      VARCHAR(500),
     additions     INTEGER NOT NULL DEFAULT 0,
     deletions     INTEGER NOT NULL DEFAULT 0,
+    -- The unified diff hunk, which both GitHub and GitLab already return in the
+    -- call that produces the counts above. Without it the analyzer sees a path
+    -- and two numbers, and cannot name a line it has never been shown.
+    patch           TEXT,
+    patch_truncated BOOLEAN NOT NULL DEFAULT FALSE,
     language      VARCHAR(40),
     -- Computed at ingest from a path pattern list. Highest-signal features for
     -- root-cause correlation: "it broke and docker-compose.yml changed".
@@ -647,6 +652,11 @@ CREATE TABLE job_baselines (
     mad_duration            NUMERIC(10,2),
     p95_duration_seconds    NUMERIC(10,2),
     mean_memory_mb          NUMERIC(10,2),
+    -- Memory gets the same robust spread as duration. Without a median and MAD
+    -- the detector had only a hardcoded ratio to compare against, and fired on
+    -- almost every job.
+    median_memory_mb        NUMERIC(10,2),
+    mad_memory              NUMERIC(10,2),
     failure_rate            NUMERIC(5,4) NOT NULL DEFAULT 0,
     retry_rate              NUMERIC(5,4) NOT NULL DEFAULT 0,
     last_computed_at        TIMESTAMPTZ,

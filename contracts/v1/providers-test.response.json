@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "latency_ms": {
+      "default": 0,
+      "title": "Latency Ms",
+      "type": "integer"
+    },
+    "message": {
+      "default": "",
+      "title": "Message",
+      "type": "string"
+    },
+    "model": {
+      "default": "",
+      "title": "Model",
+      "type": "string"
+    },
+    "models": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Models",
+      "type": "array"
+    },
+    "ok": {
+      "title": "Ok",
+      "type": "boolean"
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "string"
+    }
+  },
+  "required": [
+    "ok",
+    "provider"
+  ],
+  "title": "TestProviderResponse",
+  "type": "object"
+}

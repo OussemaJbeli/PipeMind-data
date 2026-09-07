@@ -1,0 +1,50 @@
+{
+  "description": "The same shape as `llm_override`, so the wizard tests exactly what will\nlater be sent \u2014 testing a different shape proves nothing.",
+  "properties": {
+    "api_key": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Api Key"
+    },
+    "base_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Base Url"
+    },
+    "model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model"
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider"
+  ],
+  "title": "TestProviderRequest",
+  "type": "object"
+}

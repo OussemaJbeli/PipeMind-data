@@ -1,0 +1,35 @@
+{
+  "properties": {
+    "overlap_tokens": {
+      "default": 25,
+      "title": "Overlap Tokens",
+      "type": "integer"
+    },
+    "target_tokens": {
+      "default": 150,
+      "title": "Target Tokens",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Title"
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "title": "ChunkEmbedRequest",
+  "type": "object"
+}

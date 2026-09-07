@@ -1,0 +1,359 @@
+{
+  "$defs": {
+    "Evidence": {
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "line_number": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line Number"
+        },
+        "related_failure_uuid": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Related Failure Uuid"
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Ref"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "weight": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "type",
+        "content"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Recommendation": {
+      "properties": {
+        "action_type": {
+          "default": "investigate",
+          "title": "Action Type",
+          "type": "string"
+        },
+        "affected_files": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Files",
+          "type": "array"
+        },
+        "confidence": {
+          "default": 0.5,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "patch": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patch"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rationale"
+        },
+        "risk": {
+          "default": "medium",
+          "title": "Risk",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    },
+    "SimilarFailure": {
+      "properties": {
+        "occurred_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occurred At"
+        },
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resolution"
+        },
+        "resolved": {
+          "default": false,
+          "title": "Resolved",
+          "type": "boolean"
+        },
+        "root_cause": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Root Cause"
+        },
+        "similarity": {
+          "title": "Similarity",
+          "type": "number"
+        },
+        "uuid": {
+          "title": "Uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uuid",
+        "similarity",
+        "project_name"
+      ],
+      "title": "SimilarFailure",
+      "type": "object"
+    },
+    "Usage": {
+      "properties": {
+        "cache_hit": {
+          "default": false,
+          "title": "Cache Hit",
+          "type": "boolean"
+        },
+        "completion_tokens": {
+          "default": 0,
+          "title": "Completion Tokens",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "default": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
+        },
+        "latency_ms": {
+          "default": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "model": {
+          "default": "none",
+          "title": "Model",
+          "type": "string"
+        },
+        "prompt_tokens": {
+          "default": 0,
+          "title": "Prompt Tokens",
+          "type": "integer"
+        },
+        "provider": {
+          "default": "none",
+          "title": "Provider",
+          "type": "string"
+        }
+      },
+      "title": "Usage",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "category": {
+      "title": "Category",
+      "type": "string"
+    },
+    "classification_confidence": {
+      "default": 0.0,
+      "title": "Classification Confidence",
+      "type": "number"
+    },
+    "classification_source": {
+      "default": "rules",
+      "title": "Classification Source",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "contract_version": {
+      "default": "v1",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "explanation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Explanation"
+    },
+    "is_transient": {
+      "default": false,
+      "title": "Is Transient",
+      "type": "boolean"
+    },
+    "recommendations": {
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Recommendations",
+      "type": "array"
+    },
+    "retry_recommended": {
+      "default": false,
+      "title": "Retry Recommended",
+      "type": "boolean"
+    },
+    "root_cause": {
+      "title": "Root Cause",
+      "type": "string"
+    },
+    "service_version": {
+      "title": "Service Version",
+      "type": "string"
+    },
+    "severity": {
+      "default": "medium",
+      "title": "Severity",
+      "type": "string"
+    },
+    "similar_failures": {
+      "items": {
+        "$ref": "#/$defs/SimilarFailure"
+      },
+      "title": "Similar Failures",
+      "type": "array"
+    },
+    "subcategory": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subcategory"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "usage": {
+      "$ref": "#/$defs/Usage"
+    },
+    "used_rag": {
+      "default": false,
+      "title": "Used Rag",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "service_version",
+    "category",
+    "confidence",
+    "summary",
+    "root_cause"
+  ],
+  "title": "AnalyzeResponse",
+  "type": "object"
+}

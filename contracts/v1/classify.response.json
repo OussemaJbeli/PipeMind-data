@@ -1,0 +1,51 @@
+{
+  "properties": {
+    "category": {
+      "title": "Category",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "matched_rules": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Matched Rules",
+      "type": "array"
+    },
+    "probabilities": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Probabilities",
+      "type": "object"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "subcategory": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subcategory"
+    }
+  },
+  "required": [
+    "category",
+    "confidence",
+    "source"
+  ],
+  "title": "ClassifyResponse",
+  "type": "object"
+}

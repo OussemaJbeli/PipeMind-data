@@ -1,0 +1,159 @@
+{
+  "properties": {
+    "category": {
+      "default": "UNKNOWN",
+      "title": "Category",
+      "type": "string"
+    },
+    "classification_confidence": {
+      "default": 0.0,
+      "title": "Classification Confidence",
+      "type": "number"
+    },
+    "classification_source": {
+      "default": "rules",
+      "title": "Classification Source",
+      "type": "string"
+    },
+    "ecosystem": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ecosystem"
+    },
+    "error_block": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Block"
+    },
+    "error_message": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Message"
+    },
+    "excerpt": {
+      "title": "Excerpt",
+      "type": "string"
+    },
+    "excerpt_chars": {
+      "title": "Excerpt Chars",
+      "type": "integer"
+    },
+    "excerpt_end_line": {
+      "title": "Excerpt End Line",
+      "type": "integer"
+    },
+    "excerpt_start_line": {
+      "title": "Excerpt Start Line",
+      "type": "integer"
+    },
+    "exit_code": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Exit Code"
+    },
+    "is_redacted": {
+      "default": false,
+      "title": "Is Redacted",
+      "type": "boolean"
+    },
+    "matched_lines": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Matched Lines",
+      "type": "array"
+    },
+    "normalized_error": {
+      "title": "Normalized Error",
+      "type": "string"
+    },
+    "original_chars": {
+      "title": "Original Chars",
+      "type": "integer"
+    },
+    "redaction_count": {
+      "default": 0,
+      "title": "Redaction Count",
+      "type": "integer"
+    },
+    "redaction_types": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Redaction Types",
+      "type": "array"
+    },
+    "reduction_ratio": {
+      "title": "Reduction Ratio",
+      "type": "number"
+    },
+    "signature_hash": {
+      "title": "Signature Hash",
+      "type": "string"
+    },
+    "stack_trace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stack Trace"
+    },
+    "subcategory": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subcategory"
+    }
+  },
+  "required": [
+    "excerpt",
+    "excerpt_start_line",
+    "excerpt_end_line",
+    "signature_hash",
+    "normalized_error",
+    "original_chars",
+    "excerpt_chars",
+    "reduction_ratio"
+  ],
+  "title": "ProcessLogResponse",
+  "type": "object"
+}

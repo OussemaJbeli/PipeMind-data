@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "ecosystem": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ecosystem"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "text"
+  ],
+  "title": "ClassifyRequest",
+  "type": "object"
+}

@@ -1,0 +1,449 @@
+{
+  "$defs": {
+    "ChangedFile": {
+      "properties": {
+        "additions": {
+          "default": 0,
+          "title": "Additions",
+          "type": "integer"
+        },
+        "change_type": {
+          "default": "modified",
+          "title": "Change Type",
+          "type": "string"
+        },
+        "deletions": {
+          "default": 0,
+          "title": "Deletions",
+          "type": "integer"
+        },
+        "is_config": {
+          "default": false,
+          "title": "Is Config",
+          "type": "boolean"
+        },
+        "is_dependency": {
+          "default": false,
+          "title": "Is Dependency",
+          "type": "boolean"
+        },
+        "patch": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patch"
+        },
+        "patch_truncated": {
+          "default": false,
+          "title": "Patch Truncated",
+          "type": "boolean"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "ChangedFile",
+      "type": "object"
+    },
+    "FailureContext": {
+      "properties": {
+        "ecosystem": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ecosystem"
+        },
+        "is_flaky": {
+          "default": false,
+          "title": "Is Flaky",
+          "type": "boolean"
+        },
+        "occurrence_index": {
+          "default": 1,
+          "title": "Occurrence Index",
+          "type": "integer"
+        },
+        "signature_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Signature Hash"
+        },
+        "uuid": {
+          "title": "Uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uuid"
+      ],
+      "title": "FailureContext",
+      "type": "object"
+    },
+    "JobContext": {
+      "properties": {
+        "baseline_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Duration Seconds"
+        },
+        "duration_seconds": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Seconds"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exit Code"
+        },
+        "failure_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Reason"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "stage_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stage Name"
+        },
+        "status": {
+          "default": "failed",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "title": "JobContext",
+      "type": "object"
+    },
+    "PipelineContext": {
+      "properties": {
+        "changed_files": {
+          "items": {
+            "$ref": "#/$defs/ChangedFile"
+          },
+          "title": "Changed Files",
+          "type": "array"
+        },
+        "commit_message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Commit Message"
+        },
+        "commit_sha": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Commit Sha"
+        },
+        "duration_seconds": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Seconds"
+        },
+        "iid": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Iid"
+        },
+        "previous_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Previous Status"
+        },
+        "ref": {
+          "default": "unknown",
+          "title": "Ref",
+          "type": "string"
+        },
+        "source": {
+          "default": "push",
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "title": "PipelineContext",
+      "type": "object"
+    },
+    "ProjectContext": {
+      "properties": {
+        "default_branch": {
+          "default": "main",
+          "title": "Default Branch",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "provider": {
+          "default": "unknown",
+          "title": "Provider",
+          "type": "string"
+        },
+        "tech_stack": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tech Stack",
+          "type": "array"
+        },
+        "uuid": {
+          "title": "Uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uuid",
+        "name"
+      ],
+      "title": "ProjectContext",
+      "type": "object"
+    },
+    "SourceWindow": {
+      "description": "Lines around a location a stack trace pointed at.\n\nThe `line` is marked with `>` in `content`, because a model asked to count\nlines to find the referenced one counts badly.",
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "end_line": {
+          "title": "End Line",
+          "type": "integer"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "start_line": {
+          "title": "Start Line",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "line",
+        "start_line",
+        "end_line",
+        "content"
+      ],
+      "title": "SourceWindow",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "contract_version": {
+      "default": "v1",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "error_block": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Block"
+    },
+    "failure": {
+      "$ref": "#/$defs/FailureContext"
+    },
+    "force_llm": {
+      "default": false,
+      "title": "Force Llm",
+      "type": "boolean"
+    },
+    "job": {
+      "$ref": "#/$defs/JobContext"
+    },
+    "llm_override": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Llm Override"
+    },
+    "log_excerpt": {
+      "default": "",
+      "title": "Log Excerpt",
+      "type": "string"
+    },
+    "pipeline": {
+      "$ref": "#/$defs/PipelineContext"
+    },
+    "project": {
+      "$ref": "#/$defs/ProjectContext"
+    },
+    "source_context": {
+      "items": {
+        "$ref": "#/$defs/SourceWindow"
+      },
+      "title": "Source Context",
+      "type": "array"
+    },
+    "stack_trace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stack Trace"
+    },
+    "team_id": {
+      "title": "Team Id",
+      "type": "integer"
+    },
+    "use_llm": {
+      "default": true,
+      "title": "Use Llm",
+      "type": "boolean"
+    },
+    "use_rag": {
+      "default": true,
+      "title": "Use Rag",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "team_id",
+    "failure",
+    "project",
+    "pipeline",
+    "job"
+  ],
+  "title": "AnalyzeRequest",
+  "type": "object"
+}

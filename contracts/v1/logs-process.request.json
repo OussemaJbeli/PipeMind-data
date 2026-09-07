@@ -1,0 +1,54 @@
+{
+  "properties": {
+    "exit_code": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Exit Code"
+    },
+    "job_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Job Name"
+    },
+    "raw_log": {
+      "title": "Raw Log",
+      "type": "string"
+    },
+    "stage_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stage Name"
+    },
+    "strict_redaction": {
+      "default": true,
+      "title": "Strict Redaction",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "raw_log"
+  ],
+  "title": "ProcessLogRequest",
+  "type": "object"
+}

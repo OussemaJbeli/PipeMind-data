@@ -1,0 +1,59 @@
+{
+  "$defs": {
+    "EmbeddedChunk": {
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "embedding": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Embedding",
+          "type": "array"
+        },
+        "index": {
+          "title": "Index",
+          "type": "integer"
+        },
+        "token_count": {
+          "title": "Token Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index",
+        "content",
+        "token_count",
+        "embedding"
+      ],
+      "title": "EmbeddedChunk",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "chunks": {
+      "items": {
+        "$ref": "#/$defs/EmbeddedChunk"
+      },
+      "title": "Chunks",
+      "type": "array"
+    },
+    "dimensions": {
+      "title": "Dimensions",
+      "type": "integer"
+    },
+    "model": {
+      "title": "Model",
+      "type": "string"
+    }
+  },
+  "required": [
+    "chunks",
+    "model",
+    "dimensions"
+  ],
+  "title": "ChunkEmbedResponse",
+  "type": "object"
+}
