@@ -671,3 +671,109 @@ No unit test on any single stage would have caught that. What catches it is an
 assertion that a known document is reachable from a known error message, run
 against a real index — a retrieval path that can legitimately return empty needs
 a test that notices when it *always* does.
+
+## Remediation: Laravel is the execution boundary
+
+The AI service never touches infrastructure. It proposes; `RemediationPolicyEvaluator`
+decides; an executor acts. Two rules make that boundary real rather than
+stylistic:
+
+**Risk comes from the action type, never from the response.** `ActionType::risk()`
+assigns it, so a model that labelled a production rollback "low risk" would gain
+nothing — the label is discarded before the gate sees it. Tested directly: a
+`rollback_deployment` claiming `risk: low` with confidence 1.0 against a policy
+allowing `low` automatically is still refused, and the reason names `critical`.
+
+**A missing policy is FORBIDDEN.** A gap in the table cannot become permission.
+That is why `config('pipemind.default_policies')` is seeded at registration —
+without it a new workspace could never remediate anything, which is the correct
+failure direction but a useless product.
+
+A workspace-level `forbidden` is absolute. A project policy may tighten a limit
+or relax a threshold, but it may never re-permit an action the workspace has
+banned; otherwise a workspace-wide prohibition is advice.
+
+## The policy is re-evaluated at execution, not trusted from the row
+
+An approval is permission to act *then*. `ExecuteRemediation` re-runs the
+evaluator before doing anything, because the policy may have been tightened in
+between — and separately, `RemediationPolicyController` cancels approved-but-
+unexecuted work when a policy changes to forbid it. Both are needed: without the
+re-check a queued approval executes under a policy that no longer exists;
+without the cancellation the row keeps claiming "approved" and misreports what is
+about to happen.
+
+Three distinct stops, each with its own status, so the trail says which one it
+was: `expired` (the approval aged out), `cancelled` (policy changed, or a human
+already fixed it), `failed` (the provider refused).
+
+## Patches are applied by parsing, not by shelling out to git
+
+`PatchApplier` reads a unified diff and rewrites the file contents, then commits
+through the provider API. The alternative — clone the repository and run
+`git apply` — means credentials on disk, a working tree per remediation, and
+`git apply`'s own fuzz behaviour. Parsing keeps the whole operation to two API
+calls and makes the failure mode inspectable.
+
+It is deliberately stricter than `patch(1)`. Context must match exactly; there is
+no fuzz. Fuzzing is the right trade for a human at a terminal who can read the
+result and the wrong one for an automated commit nobody has looked at yet, so a
+file edited since the analysis produces a clean refusal ("the file has changed")
+instead of a silent mangle.
+
+Hunks are located by searching outward from the position the header claims,
+because earlier hunks change the file's length and unrelated edits above shift
+everything. Matching stays exact once found — the search moves *where* to apply,
+never *whether* it matches.
+
+**One bug worth recording.** Every real patch ends with a newline, which
+`preg_split` turns into a trailing empty element. Read as a blank context line,
+it made the hunk demand a line the file did not have, so nothing applied. Every
+heredoc fixture in the unit tests happened to end without a newline — so eleven
+passing tests were all exercising an easier case than reality, and the bug only
+surfaced when an integration test built its patch with an explicit `\n`.
+
+## A merge request, never a commit to the default branch
+
+`CreateMergeRequestExecutor` is the only code that writes to a repository, and it
+enforces three things itself rather than trusting them:
+
+1. The change lands on a new `pipemind/…` branch and is *proposed*. The value of
+   a suggested fix is that a person still reads it; committing to `main` would
+   make PipeMind the author of unreviewed code.
+2. Only files the recommendation declared. A patch touching a path the analysis
+   never mentioned is refused — mirroring `validate_patch()` in the AI service.
+   This is defence against the model, not against the user.
+3. Exact context or nothing, per `PatchApplier` above.
+
+## A validated patch is a merge-request proposal
+
+Every recommendation in the real database arrived as `edit_file` or
+`update_config`, and neither has an executor — so the best output of the whole
+analysis chain, an applyable diff pinned to the line that broke, could never be
+applied. The gap was in the AI service, not the remediation layer.
+
+`sanitize()` now promotes a recommendation to `create_merge_request` when it
+carries a patch that survived `validate_patch()`, because branch → commit →
+merge request is the only way this system applies a file change.
+
+The promotion keeps the **higher** of the two risks. `update_config` is HIGH and
+`create_merge_request` is MEDIUM, so taking the promoted action's own risk would
+quietly relax the gate — and the entire reason risk is assigned in code is that
+nothing should be able to.
+
+## Outcome watching is what closes the learning loop
+
+"Succeeded" from an executor means the API call was accepted, not that anything
+was fixed. `WatchRemediationOutcome` polls for the pipeline the retry produced
+and records `outcome_success` — and on green, promotes the signature to `is_known`,
+so every future occurrence short-circuits with no model call at all.
+
+`outcome_success` is nullable on purpose: **null is "not verified yet", which is
+not "did not fix it"**. Collapsing those would let a slow pipeline look like a
+failed remediation.
+
+It never overwrites a resolution a human confirmed, and it records no
+`resolution_confirmed_by` for its own inferences — nobody typed them, and
+claiming a person vouched would corrupt the provenance that makes the
+short-circuit trustworthy.

@@ -1,0 +1,1897 @@
+% ============================================================================
+%  Rapport de stage de deuxieme annee ingenieur
+%  PipeMind : plateforme intelligente d'analyse des defaillances CI/CD
+%
+%  Compilation : pdfLaTeX (Overleaf, parametres par defaut)
+%  Les emplacements de figures sont des cadres a remplacer par les images.
+% ============================================================================
+\documentclass[12pt,a4paper,oneside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=3cm,right=2.5cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------- couleurs --
+\definecolor{pmgreen}{HTML}{4A7C2F}
+\definecolor{pmgray}{HTML}{555555}
+\definecolor{pmlight}{HTML}{F4F6F4}
+\definecolor{pmborder}{HTML}{BFC7BF}
+
+% ------------------------------------------------------------------ entetes --
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small\thepage}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\small\thepage}}
+
+% --------------------------------------------------------------- titres ----
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\color{pmgreen}}
+  {\chaptertitlename\ \thechapter}{10pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{30pt}
+
+% --------------------------------------------------- table des matieres ----
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\setlength{\cftbeforechapskip}{6pt}
+
+% ------------------------------------------------------ code source --------
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{pmlight},
+  frame=single,
+  rulecolor=\color{pmborder},
+  breaklines=true,
+  showstringspaces=false,
+  keywordstyle=\color{pmgreen}\bfseries,
+  commentstyle=\color{pmgray}\itshape,
+  captionpos=b,
+  xleftmargin=6pt,
+  framexleftmargin=6pt,
+}
+
+% ============================================================================
+%  Emplacements de figures
+%  \captureph : capture d'ecran a inserer plus tard
+%  \schemaph  : schema a produire, l'invite de generation est affichee
+% ============================================================================
+\newcommand{\captureph}[3]{%
+  \begin{figure}[htbp]
+  \centering
+  \fcolorbox{pmborder}{pmlight}{%
+    \begin{minipage}[c][#3][c]{0.86\textwidth}
+      \centering
+      \textcolor{pmgray}{\small\textbf{[ Emplacement reserve : capture d'ecran ]}}\\[4pt]
+      \textcolor{pmgray}{\footnotesize #1}
+    \end{minipage}}
+  \caption{#1}
+  \label{#2}
+  \end{figure}}
+
+\newcommand{\schemaph}[4]{%
+  \begin{figure}[htbp]
+  \centering
+  \fcolorbox{pmborder}{white}{%
+    \begin{minipage}[c][#3][c]{0.86\textwidth}
+      \centering
+      \textcolor{pmgray}{\small\textbf{[ Emplacement reserve : schema a produire ]}}\\[6pt]
+      \begin{minipage}{0.94\textwidth}
+        \footnotesize\itshape\color{pmgray}
+        \textbf{Invite de generation :} #4
+      \end{minipage}
+    \end{minipage}}
+  \caption{#1}
+  \label{#2}
+  \end{figure}}
+
+\captionsetup{font=small,labelfont={bf,color=pmgreen}}
+
+\begin{document}
+
+% ============================================================================
+%  PAGE DE GARDE
+% ============================================================================
+\begin{titlepage}
+\centering
+\vspace*{0.5cm}
+
+{\Large\bfseries Université [ NOM DE L'Université ]}\\[0.3cm]
+{\large [ Nom de l'école ou de l'institut ]}\\[1.2cm]
+
+\fcolorbox{pmborder}{pmlight}{%
+  \begin{minipage}[c][3.2cm][c]{0.45\textwidth}
+    \centering
+    \textcolor{pmgray}{\small\textbf{[ Emplacement reserve : logo de l'université ]}}
+  \end{minipage}}
+
+\vspace{1.4cm}
+
+{\large\scshape Rapport de stage de deuxième année}\\[1.4cm]
+
+\rule{0.8\textwidth}{1pt}\\[0.7cm]
+{\Huge\bfseries\color{pmgreen} PipeMind}\\[0.5cm]
+{\large\bfseries Plateforme intelligente d'analyse et de remédiation\\[0.2cm]
+des défaillances d'intégration continue}\\[0.6cm]
+\rule{0.8\textwidth}{1pt}\\[1.6cm]
+
+\begin{minipage}{0.45\textwidth}
+\begin{flushleft}
+\textbf{Réalisé par :}\\
+Oussema Jbeli\\
+Classe : [ Classe ]
+\end{flushleft}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+\begin{flushright}
+\textbf{Encadre par :}\\
+[ Encadrant académique ]\\
+[ Encadrant professionnel ]
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+{\large Organisme d'accueil : [ Nom de l'entreprise ]}\\[0.4cm]
+{\large Année universitaire 2025 -- 2026}
+
+\end{titlepage}
+
+% ============================================================================
+%  PAGES LIMINAIRES
+% ============================================================================
+\pagenumbering{arabic}
+\setcounter{page}{2}
+
+\renewcommand{\contentsname}{Table des matières}
+\tableofcontents
+\thispagestyle{fancy}
+
+\clearpage
+\renewcommand{\listfigurename}{Liste des figures}
+\listoffigures
+
+\clearpage
+\chapter*{Liste des abréviations}
+\addcontentsline{toc}{chapter}{Liste des abréviations}
+\markboth{Liste des abréviations}{}
+
+\begin{longtable}{@{}p{3cm}p{11.5cm}@{}}
+\toprule
+\textbf{Abreviation} & \textbf{Signification} \\
+\midrule
+\endhead
+API & Application Programming Interface \\
+CI & Continuous Intégration (intégration continue) \\
+CD & Continuous Delivery / Deployment (livraison continue) \\
+CPU & Central Processing Unit \\
+CRUD & Create, Read, Update, Delete \\
+DDD & Domain-Driven Design (conception pilotée par le domaine) \\
+DTO & Data Transfer Object \\
+ERD & Entity Relationship Diagram \\
+HMAC & Hash-based Message Authentication Code \\
+HNSW & Hierarchical Navigable Small World \\
+HTTP & HyperText Transfer Protocol \\
+JSON & JavaScript Object Notation \\
+JWT & JSON Web Token \\
+LLM & Large Language Model (grand modèle de langage) \\
+MAD & Médian Absolute Deviation (écart absolu médian) \\
+MR & Merge Request (demande de fusion) \\
+MTTR & Mean Time To Recovery (temps moyen de rétablissement) \\
+ORM & Object-Relational Mapping \\
+PR & Pull Request \\
+RAG & Retrieval-Augmented Génération \\
+REST & Representational State Transfer \\
+SPA & Single Page Application \\
+SQL & Structured Query Language \\
+SSE & Server-Sent Events \\
+UML & Unified Modeling Language \\
+UUID & Universally Unique Identifier \\
+YAML & YAML Ain't Markup Language \\
+\bottomrule
+\end{longtable}
+
+\clearpage
+% ============================================================================
+%  INTRODUCTION Générale
+% ============================================================================
+\chapter*{Introduction générale}
+\addcontentsline{toc}{chapter}{Introduction générale}
+\markboth{Introduction générale}{}
+
+L'intégration continue s'est imposée au cours de la dernière décennie comme une
+pratique standard du développement logiciel. Chaque modification poussée sur un
+dépôt déclenche automatiquement une chaîne de compilation, de tests et de
+vérifications qui protège la branche principale et raccourcit le cycle de
+livraison. Cette automatisation a un coût que l'on mesure rarement : lorsque la
+chaîne échoue, quelqu'un doit comprendre pourquoi.
+
+Ce travail de diagnostic occupe une place plus importante qu'il n'y paraît. Un
+journal d'exécution de pipeline dépasse fréquemment plusieurs dizaines de
+milliers de lignes, dont une seule contient généralement l'information utile.
+L'ingenieur qui reprend le problème doit ouvrir l'interface du fournisseur,
+retrouver le bon travail, faire défiler une sortie verbeuse, isoler le message
+d'erreur, puis reconstituer mentalement le lien entre cette erreur et les
+modifications récentes du code. L'opération se répète plusieurs fois par jour
+dans une équipe active, et la connaissance produite se dissipe : la même
+défaillance réapparaît trois semaines plus tard sans que personne ne se souvienne
+de la manière dont elle avait été résolue.
+
+Les plateformes d'intégration continue actuelles offrent une observabilité
+détaillée de l'exécution mais restent silencieuses sur son interprétation. Elles
+indiquent qu'un travail a échoué, affichent son journal, exposent sa durée, sans
+jamais formuler d'hypothèse sur la cause. L'écart entre la donnée brute et la
+compréhension reste entièrement à la charge de l'humain.
+
+Le projet PipeMind, réalisé dans le cadre du stage de deuxième année, s'attaque
+précisément à cet écart. Il s'agit d'une plateforme qui se connecte aux
+fournisseurs d'intégration continue existants, observe les exécutions, détecte
+les défaillances, analyse les journaux au moyen d'un modèle de langage, et
+restitue une cause probable accompagnée des éléments de preuve qui la soutiennent.
+Lorsque la correction est suffisamment certaine, la plateforme propose un
+correctif sous forme de différence applicable, soumis à une politique de sécurité
+que l'équipe définit elle-même.
+
+Trois principes ont guide la conception. Le premier est la séparation stricte
+entre les faits observes et l'interprétation produite par le modèle : l'interface
+ne mélange jamais les deux, afin que l'utilisateur sache toujours ce qui relève
+de la mesure et ce qui relève de l'hypothèse. Le deuxième est la traçabilité :
+chaque affirmation de l'analyse renvoie à une ligne de journal, à un fichier
+modifie ou à une défaillance passée, et une affirmation sans référence vérifiable
+est rejetée avant d'atteindre l'utilisateur. Le troisième est la mémoire : une
+défaillance dont la résolution a été confirmée une fois n'à plus besoin d'être
+soumise au modèle, ce qui réduit simultanément le coût, la latence et le risque
+d'incohérence.
+
+Le présent rapport rend compte de la conception et de la réalisation de cette
+plateforme. Il est organise en cinq chapitres. Le premier situé le projet dans
+son contexte, analyse les solutions existantes et justifié la démarche adoptée.
+Le deuxième présente la spécification des besoins, l'architecture générale et le
+découpage du travail en incréments. Les trois chapitres suivants détaillent la
+réalisation : le socle applicatif et la chaîne d'ingestion, le moteur d'analyse
+intelligente, puis la remédiation, la supervision et l'interface. Une conclusion
+générale dresse le bilan du travail accompli, expose sans complaisance ce qui n'a
+pas pu être valide, et esquisse les prolongements envisageables.
+
+\clearpage
+
+% ============================================================================
+%  CHAPITRE 1
+% ============================================================================
+\chapter{Cadre général du projet}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Ce chapitre pose le cadre dans lequel le projet a été mené. Il présente
+l'organisme d'accueil, examine les outils que les équipes utilisent aujourd'hui
+pour diagnostiquer les défaillances d'intégration continue, identifie les limites
+de ces outils, et formule la solution proposée. La dernière section expose la
+méthodologie de travail retenue et l'environnement technique mis en place.
+
+\section{Présentation de l'organisme d'accueil}
+
+\textit{[ Section a compléter avec les informations de l'entreprise : raison
+sociale, date de création, secteur d'activité, effectif, principaux clients,
+organisation interne et positionnement sur le marche. ]}
+
+Le stage s'est déroule au sein de [ nom de l'entreprise ], structure specialisée
+dans [ domaine d'activité ]. L'équipe technique s'appuie quotidiennement sur des
+chaînes d'intégration continue pour valider ses livraisons, ce qui a rendu la
+problématique du projet immédiatement concrète : les difficultés décrites dans ce
+rapport ont été observées dans le contexte réel de production de l'entreprise
+avant d'être formalisées.
+
+\schemaph{Organigramme de l'organisme d'accueil}{fig:organigramme}{4.5cm}{%
+Crée un organigramme d'entreprise propre et professionnel, orientation
+horizontale, style plat et minimaliste, palette de gris et de vert fonce.
+Sommet : Direction générale. Second niveau : Direction technique, Direction
+commerciale, Direction administrative. Sous la Direction technique : équipe
+Développement, équipe DevOps, équipe Qualité. Encadre l'équipe DevOps pour
+indiquer le service d'accueil du stagiaire. Zones de texte rectangulaires a
+coins arrondis, connecteurs orthogonaux, fond blanc.}
+
+\section{Étude de l'existant}
+
+\subsection{Analyse de l'existant}
+
+Le diagnostic d'une défaillance d'intégration continue repose aujourd'hui sur un
+enchaînement d'opérations manuelles que l'on peut décomposer en quatre étapes.
+
+La première est la notification. Le développeur apprend l'échec par un courriel,
+un message dans un canal de discussion où une pastille rouge sur l'interface du
+fournisseur. Cette notification indique qu'un pipeline a échoue mais ne dit rien
+de la nature du problème.
+
+La deuxième est la localisation. Il faut ouvrir l'exécution, identifier parmi les
+travaux celui qui a échoue, puis ouvrir son journal. Sur une chaîne comportant
+une dizaine de travaux parallèles, cette étape demande déjà plusieurs
+manipulations.
+
+La troisième est l'extraction. Le journal d'un travail de test représente
+couramment entre dix mille et cinquante mille lignes. L'ingenieur fait défiler,
+recherche des motifs connus comme \texttt{ERROR} ou \texttt{FAILED}, et tente
+d'isoler le bloc pertinent au milieu d'une sortie où les traces de compilation,
+les avertissements de dépendances et les messages d'information se mélangent.
+
+La quatrième est l'interprétation. Une fois le message identifie, il reste a
+comprendre son origine : s'agit-il d'une régression introduite par le dernier
+commit, d'une instabilité d'infrastructure, d'un test intermittent, d'une
+dépendance qui a change de version ? Cette question mobilise une connaissance du
+projet que les outils ne possèdent pas.
+
+Plusieurs solutions commerciales apportent des réponses partielles à ce problème.
+Le tableau \ref{tab:existant} en résumé les caractéristiques principales.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparaison des solutions existantes}
+\label{tab:existant}
+\small
+\begin{tabularx}{\textwidth}{@{}lXXX@{}}
+\toprule
+\textbf{Solution} & \textbf{Périmètre} & \textbf{Apports} & \textbf{Limites} \\
+\midrule
+GitLab Duo & GitLab uniquement & Résumé du journal d'échec par modèle de langage & Enfermée dans un écosystème, pas de mémoire entre exécutions, pas de citation vérifiable \\
+\addlinespace
+Datadog CI Visibility & Multi-fournisseur & Métriques, détection de tests instables, tableaux de bord & Observabilité sans diagnostic, coût élève, pas de proposition de correctif \\
+\addlinespace
+Harness AIDA & Harness uniquement & Analyse de cause et suggestion de correction & Suppose l'adoption complète de la plateforme Harness \\
+\addlinespace
+Outils internes & Variable & Adaptes au contexte de l'équipe & Non maintenus, règles figées, aucune capacité d'apprentissage \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Critique de l'existant}
+
+L'examen de ces solutions fait apparaître quatre limites qui ont directement
+orienté la conception de PipeMind.
+
+\textbf{L'enfermement dans un écosystème.} Les fonctionnalités d'analyse les plus
+abouties sont proposées par les éditeurs de plateformes et ne fonctionnent que
+sur leur propre produit. Une équipe qui utilise GitLab pour ses services et
+GitHub Actions pour ses bibliothèques doit apprendre deux outils différents et
+n'obtient jamais de vue consolidée.
+
+\textbf{L'absence de mémoire.} Les analyses produites sont traitées comme des
+réponses jetables. Une défaillance identique survenant un mois plus tard donne
+lieu à une nouvelle analyse, facturée de nouveau, sans qu'aucun lien soit établi
+avec la résolution précédente. La connaissance accumulée par l'équipe reste
+enfermée dans des conversations et des tickets.
+
+\textbf{Le résumé plutôt que le diagnostic.} La majorité des fonctionnalités
+dites intelligentes se contentent de reformuler le journal en langage naturel.
+Le résultat est plus lisible mais n'apporte pas d'information nouvelle :
+l'ingenieur savait déjà que la compilation avait échoue, il voulait savoir
+pourquoi.
+
+\textbf{L'affirmation non vérifiable.} Un modèle de langage produit un texte
+plausible même lorsqu'il se trompe. Sans mécanisme obligeant chaque affirmation a
+pointer vers un élément concret du journal ou du dépôt, l'utilisateur ne dispose
+d'aucun moyen de distinguer une analyse correcte d'une invention convaincante.
+Cette dernière limite est la plus sérieuse, car elle détruit la confiance qui
+justifiait l'outil.
+
+\subsection{Solution proposée}
+
+PipeMind répond à ces quatre limites par autant de choix structurants.
+
+Face à l'enfermement, la plateforme adopte une couche d'abstraction des
+fournisseurs. GitLab, GitHub Actions et Jenkins sont accédés à travers une
+interface unique qui normalise les événements, les statuts et les journaux vers
+un modèle interne commun. Aucun composant situé au-dessus de cette couche ne sait
+de quel fournisseur provient une exécution.
+
+Face à l'absence de mémoire, chaque défaillance reçoit une signature calculée a
+partir de son message d'erreur normalise. Cette signature sert simultanément de
+clé de déduplication, de clé de cache pour les appels au modèle et de point
+d'ancrage pour l'historique. Lorsqu'une résolution est confirmée par un humain,
+toute occurrence ultérieure de la même signature est résolue instantanement, sans
+appel au modèle.
+
+Face au résumé, l'analyse est enrichie avant d'atteindre le modèle. Les fichiers
+modifiés par le commit fautif, les différences correspondantes, le contexte
+source autour des lignes citées par la trace d'appel et les défaillances
+similaires du passe sont assembles dans l'invite. Le modèle ne résumé pas un
+journal, il raisonne sur un dossier.
+
+Face à l'affirmation non vérifiable, la réponse du modèle est contrainte par un
+schéma qui impose à chaque élément de preuve une référence : un numéro de ligne
+de journal, un chemin de fichier où l'identifiant d'une défaillance antérieure.
+Les références non résolubles sont rejetées par le service avant l'enregistrement.
+
+\section{Méthodologie de travail adoptée}
+
+\subsection{Approche itérative}
+
+Le projet a été conduit selon une approche itérative et incrémentale, structurée
+en jalons fonctionnels plutôt qu'en phases techniques. Ce choix répond à une
+contrainte propre au sujet : la valeur du produit dépend de la qualité des
+analyses, qui ne peut être évaluée que sur des données réelles. Une organisation
+en phases classiques aurait repoussé cette évaluation à la fin du projet, au
+moment où il devient trop coûteux de revenir sur une décision structurante.
+
+Chaque incrément se termine par un état déployable et observable. Le premier
+livre l'ingestion et l'affichage des exécutions sans aucune intelligence, ce qui
+permet de valider la couche d'abstraction des fournisseurs sur des données de
+production. Le deuxième ajouté le traitement des journaux et la classification
+par règles. Le troisième introduit le modèle de langage et la recherche
+vectorielle. Les incréments suivants couvrent la remédiation, la détection
+d'anomalies et le temps réel.
+
+Cette progression a permis de détecter tôt plusieurs erreurs de conception qui
+auraient été couteuses plus tard. Le chapitre 4 revient en détail sur l'une
+d'elles : un seuil de similarité choisi par intuition, qui rendait la recherche
+d'historique silencieusement inopérante.
+
+\schemaph{Cycle de développement itératif adopte}{fig:cycle}{5cm}{%
+Crée un diagramme circulaire de cycle de développement itératif, style plat
+professionnel, palette vert fonce et gris. Quatre étapes disposées en cercle avec
+des fleches courbes dans le sens horaire : Analyse des besoins, Conception,
+Réalisation, Validation sur données réelles. Au centre du cercle, un encadre
+intitule Incrément livrable. Ajouté sous le cercle une fleche horizontale
+indiquant la succession des incréments : Incrément 1 Ingestion, Incrément 2
+Traitement, Incrément 3 Intelligence, Incrément 4 Remédiation, Incrément 5 Temps
+réel. Fond blanc, typographie sans empattement.}
+
+\subsection{Conception orientée domaine}
+
+La structuration du code s'inspire des principes de la conception orientée
+domaine, sans en appliquer le formalisme complet. Trois idées ont été retenues.
+
+La première est la délimitation de contextes. Le système est découpé en quatre
+dépôts dont les responsabilités ne se recouvrent pas : le service applicatif
+central, le service d'intelligence artificielle, l'interface utilisateur et le
+dépôt de documentation et d'expérimentations. Cette séparation n'est pas
+seulement organisationnelle. Elle matérialise une frontière de sécurité, exposée
+au chapitre 5 : le service d'intelligence artificielle ne dispose d'aucun accès
+aux dépôts de code des utilisateurs, et toute action effective transite
+obligatoirement par le service applicatif.
+
+La deuxième est l'expression du domaine dans le code. Les notions métier
+apparaissent comme des types explicites plutôt que comme des chaînes de
+caractères : le type d'action possible sur une défaillance, le niveau de risque
+associe, le statut d'une remédiation et la catégorie d'un échec sont des
+énumérations dont les valeurs autorisées sont contraintes jusque dans le schéma
+de la base.
+
+La troisième est l'usage d'objets de valeur pour les décisions. La verdict rendu
+par le moteur de politiques, par exemple, n'est pas un booléen mais un objet
+immuable portant à la fois la décision et sa justification textuelle. Cette
+justification est ensuite affichée à l'utilisateur, ce qui évite le cas où une
+action est refusée sans explication.
+
+\subsection{Outils et environnement}
+
+L'environnement technique retenu est résumé dans le tableau \ref{tab:outils}. Les
+choix ont privilégie des technologies matures, documentées et exploitables sur un
+poste de développement unique, la plateforme devant pouvoir être demontrée sans
+dépendance à une infrastructure externe.
+
+\begin{table}[htbp]
+\centering
+\caption{Environnement technique du projet}
+\label{tab:outils}
+\small
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+\textbf{Couche} & \textbf{Technologie} & \textbf{Justification} \\
+\midrule
+Service applicatif & Laravel 12 (PHP 8.3) & File d'attente, ordonnanceur, ORM et diffusion temps réel intégrés au framework \\
+Service d'intelligence & FastAPI (Python 3.12) & Écosystème de traitement du langage et de vecteurs, validation de schéma native \\
+Interface & Vue 3, TypeScript, Vite & Composition API, typage strict, temps de reconstruction faible \\
+Base de données & PostgreSQL 16 + pgvector & Relationnel et recherche vectorielle dans un seul moteur \\
+File et cache & Redis 7 & Support des files Laravel et du verrouillage distribue \\
+Stockage objet & MinIO & Conservation des journaux bruts, compatible S3 \\
+Temps réel & Laravel Reverb & Serveur WebSocket auto-héberge, sans service tiers \\
+Modèle de langage & Gemini 3.6 Flash & Coût par appel faible, sortie structurée fiable \\
+Vectorisation & all-MiniLM-L6-v2 & Exécution locale, 384 dimensions, aucune donnée transmise \\
+Qualité & Pest, PHPStan, Pytest, mypy & Analyse statique et tests sur les trois services \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+L'étude de l'existant a montré que les outils disponibles traitent l'observabilité
+des chaînes d'intégration continue mais laissent le diagnostic à la charge de
+l'ingenieur. Les quatre limites identifiées, l'enfermement dans un écosystème,
+l'absence de mémoire, le résumé sans diagnostic et l'affirmation non vérifiable,
+constituent le cahier des charges implicite du projet. Le chapitre suivant traduit
+ces constats en besoins formels et en architecture.
+
+\clearpage
+% ============================================================================
+%  CHAPITRE 2
+% ============================================================================
+\chapter{Planification et architecture}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Ce chapitre traduit les constats du chapitre précédent en une spécification
+exploitable. Il identifie les acteurs du système, énumère les besoins
+fonctionnels et non fonctionnels, présente l'architecture générale retenue et
+expose le découpage du travail en incréments livrables.
+
+\section{Spécification des besoins}
+
+\subsection{Identification des acteurs}
+
+Quatre acteurs interagissent avec la plateforme. Trois sont humains et se
+distinguent par leurs droits ; le quatrième est un système externe.
+
+\begin{table}[htbp]
+\centering
+\caption{Acteurs du système et responsabilités}
+\label{tab:acteurs}
+\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Acteur} & \textbf{Rôle et droits} \\
+\midrule
+Développeur & Consulte les exécutions et les défaillances, lit les analyses, demande une nouvelle analyse, corrige une catégorie erronée, sollicite une remédiation. Ne peut pas approuver sa propre demande. \\
+\addlinespace
+Responsable technique & Dispose des droits du développeur, approuvé ou refusé les remédiations, gère les connexions aux fournisseurs et les clés des modèles. \\
+\addlinespace
+Propriétaire de l'espace & Dispose des droits précédents, définit les politiques de remédiation, fixe le plafond de dépense mensuel et le mode de confidentialité. \\
+\addlinespace
+Fournisseur d'intégration continue & Système externe. Émet les événements d'exécution vers la plateforme et expose une interface de programmation permettant de relancer un travail, de lire un journal ou d'ouvrir une demande de fusion. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Besoins fonctionnels}
+
+Les besoins fonctionnels ont été regroupes en six domaines. Le tableau
+\ref{tab:besoins} les énumère avec leur niveau de priorité, établi selon la
+méthode MoSCoW.
+
+\begin{table}[htbp]
+\centering
+\caption{Besoins fonctionnels et priorités}
+\label{tab:besoins}
+\small
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+\textbf{Code} & \textbf{Priorité} & \textbf{Description} \\
+\midrule
+BF-01 & Essentiel & Connecter un fournisseur d'intégration continue et importer les dépôts surveilles \\
+BF-02 & Essentiel & Recevoir les événements d'exécution et les normaliser vers un modèle unique \\
+BF-03 & Essentiel & Détecter une défaillance, récupérer le journal du travail fautif et en extraire le bloc d'erreur \\
+BF-04 & Essentiel & Occulter les données sensibles avant tout stockage et toute transmission \\
+BF-05 & Essentiel & Classer la défaillance dans une taxonomie de catégories techniques \\
+BF-06 & Essentiel & Produire une cause probable accompagnée d'éléments de preuve références \\
+BF-07 & Essentiel & Regrouper les défaillances identiques sous une signature commune \\
+BF-08 & Important & Retrouver les défaillances passées similaires et les résolutions confirmées \\
+BF-09 & Important & Proposer un correctif sous forme de différence applicable \\
+BF-10 & Important & Soumettre toute action modifiant un dépôt à une politique et à une approbation \\
+BF-11 & Important & Détecter les anomalies de durée et de fiabilité par rapport à une référence \\
+BF-12 & Souhaitable & Diffuser les mises à jour en temps réel vers l'interface \\
+BF-13 & Souhaitable & Indexer une base de connaissances propre à l'équipe et l'exploiter dans l'analyse \\
+BF-14 & Souhaitable & Suivre la dépense engagée auprès du fournisseur de modèle \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Besoins non fonctionnels}
+
+Cinq exigences non fonctionnelles ont structure les choix techniques.
+
+\textbf{Cloisonnement des données.} La plateforme est multi-locataire. Les
+données d'un espace de travail ne doivent en aucun cas être accessibles depuis un
+autre, y compris par manipulation directe d'un identifiant dans une adresse. Cette
+exigence a été traduite par un filtrage global applique au niveau de l'ORM, et
+vérifiée par une suite de tests dédiée.
+
+\textbf{Maîtrise du coût.} Chaque appel au modèle de langage est facturée. Le
+système doit connaître sa dépense mensuelle, refuser les appels au-delà d'un
+plafond défini par l'utilisateur, et privilégier systématiquement les chemins
+gratuits lorsqu'ils existent.
+
+\textbf{Dégradation controlée.} Une défaillance d'un composant non essentiel ne
+doit jamais empêcher l'enregistrement d'un événement. Concrètement, une erreur du
+service d'intelligence, une indisponibilité du serveur temps réel où une panne de
+la recherche vectorielle dégradent la richesse de l'information affichée sans
+interrompre l'ingestion.
+
+\textbf{Confidentialité du code source.} Les journaux d'exécution contiennent
+fréquemment des jetons, des chaînes de connexion et des identifiants. Un
+mécanisme d'occultation doit s'appliquer avant l'écriture en base et avant toute
+transmission à un service externe. Un mode strictement local doit permettre de
+n'envoyer aucune donnée hors de l'infrastructure de l'utilisateur.
+
+\textbf{Performance percue.} L'affichage d'une page de défaillance ne doit pas
+attendre la fin de l'analyse. Le traitement est asynchrone et l'interface se met
+à jour lorsque le résultat arrive.
+
+\section{Architecture générale du système}
+
+\subsection{Vue d'ensemble}
+
+Le système est réparti en quatre dépôts indépendants, dont trois correspondent a
+des services exécutables. Cette répartition suit une frontière de responsabilité
+plutôt qu'un découpage technique.
+
+Le service applicatif, écrit en Laravel, constitue le coeur du système. Il reçoit
+les événements des fournisseurs, persiste les données, orchestre les traitements
+asynchrones, expose l'interface de programmation consommée par le client web et,
+point essentiel, détient l'exclusivite des actions ayant un effet sur les dépôts
+des utilisateurs.
+
+Le service d'intelligence, écrit en Python, regroupe tout ce qui touche au
+traitement du langage : occultation, extraction du bloc d'erreur, classification,
+vectorisation, recherche par similarité et appel au modèle de langage. Il est
+volontairement dépourvu de tout accès aux fournisseurs. Il reçoit un dossier,
+retourne une analyse, et ne peut rien déclencher.
+
+L'interface est une application monopage en Vue 3 qui consomme l'interface de
+programmation et écoute les événements temps réel.
+
+Le quatrième dépôt ne contient pas de code exécutable. Il rassemble le schéma de
+la base, les contrats d'échange entre services, les protocoles d'expérimentation
+et leurs résultats. Ce dépôt joue un rôle de référence : les mesures citées dans
+ce rapport y sont conservées avec la procédure qui les a produites.
+
+\schemaph{Architecture générale de la plateforme}{fig:archi}{9cm}{%
+Crée un diagramme d'architecture logicielle professionnel, style plat, palette
+vert fonce, gris et blanc, orientation verticale. En haut, une bande intitulée
+Fournisseurs externes contenant trois boîtes : GitLab, GitHub Actions, Jenkins,
+avec une fleche descendante étiquetée Webhooks HTTP signes. Au milieu a gauche,
+une grande boîte intitulée Service applicatif Laravel contenant quatre
+sous-boîtes : Ingestion et normalisation, Files d'attente asynchrones, API REST,
+Moteur de politiques. Au milieu a droite, une boîte intitulée Service
+d'intelligence FastAPI contenant : Occultation, Classification, Recherche
+vectorielle, Appel au modèle. Une fleche bidirectionnelle entre les deux boîtes
+étiquetée HTTP interne, jeton partage. Sous le service applicatif, une bande
+Persistance avec PostgreSQL et pgvector, Redis, MinIO. A droite du service
+d'intelligence, une boîte externe Modèle de langage Gemini avec une fleche
+sortante. En bas, une boîte Interface Vue 3 reliée à l'API REST par une fleche et
+au serveur Reverb WebSocket par une fleche étiquetée Temps réel. Ajouté une
+annotation en rouge fonce sur la frontière : le service d'intelligence n'à aucun
+accès aux dépôts de code.}
+
+\subsection{Architecture événementielle asynchrone}
+
+L'ingestion repose sur une chaîne de traitements asynchrones plutôt que sur un
+traitement synchrone à la réception. Ce choix est impose par la nature des
+données : la récupération d'un journal auprès d'un fournisseur peut demander
+plusieurs secondes, l'analyse par un modèle de langage entre quatre et quinze
+secondes. Traiter ces opérations pendant la requête du webhook conduirait à des
+expirations côté fournisseur, qui réessaierait alors la livraison et provoquerait
+des traitements en double.
+
+Le flux se déroule en cinq étapes. Le fournisseur émet une requête HTTP signée
+vers un point d'entrée public. Le contrôleur vérifie la signature, enregistre
+l'événement brut et répond immédiatement avec un code 202. Une tâche asynchrone
+prend ensuite l'événement en charge : elle identifie le projet concerné,
+normalise la charge utile vers le modèle interne et persiste l'exécution. Si un
+travail a échoué, une deuxième tâche récupère le journal auprès du fournisseur,
+le transmet au service d'intelligence pour occultation et extraction, puis
+enregistre la défaillance. Une troisième tâche déclenche l'analyse. Une quatrième
+calcule le vecteur de la défaillance et l'indexe.
+
+Les tâches sont réparties sur des files distinctes selon leur criticité :
+ingestion, journaux, analyse et métriques. Cette séparation évite qu'un afflux
+d'analyses lentes ne retardé l'enregistrement des exécutions.
+
+Deux propriétés ont demande une attention particulière. La première est
+l'idempotence : un fournisseur peut relivrer un événement déjà traite, et le
+système doit reconnaître le doublon plutôt que de créer une seconde exécution. La
+seconde est la tolérance au désordre : les événements n'arrivent pas
+nécessairement dans l'ordre chronologique, et une exécution terminée ne doit
+jamais être ramenée à l'état en cours par un événement de travail arrive en
+retard.
+
+\schemaph{Chaîne de traitement asynchrone d'un événement}{fig:flux}{8cm}{%
+Crée un diagramme de sequence UML propre et lisible, style plat, palette vert
+fonce et gris, fond blanc. Participants de gauche a droite : Fournisseur CI,
+Contrôleur Webhook, Base de données, File Redis, Tâche Ingestion, Tâche Journal,
+Service IA, Tâche Analyse, Interface Web. Sequence des messages : 1 Fournisseur
+envoie POST webhook signe au Contrôleur. 2 Contrôleur vérifie la signature HMAC.
+3 Contrôleur enregistre l'événement brut en Base. 4 Contrôleur répond 202 Accepte
+au Fournisseur, avec une noté indiquant réponse immédiate. 5 Contrôleur place un
+message dans la File Redis. 6 Tâche Ingestion normalise et persiste l'exécution.
+7 Tâche Journal récupère le journal auprès du Fournisseur. 8 Tâche Journal envoie
+le journal au Service IA pour occultation et extraction. 9 Tâche Analyse envoie
+le dossier au Service IA. 10 Service IA retourne l'analyse structurée. 11 Tâche
+Analyse persiste l'analyse. 12 Une fleche en pointillés vers Interface Web
+étiquetée Diffusion WebSocket. Ajouté une barre d'activation sur chaque
+participant.}
+
+\subsection{Pipeline d'intégration continue du projet}
+
+Le projet applique à lui-même les pratiques qu'il observe. Chaque dépôt dispose
+d'une chaîne d'intégration continue déclenchée à chaque poussée, organisée en
+trois travaux parallèles.
+
+Le premier vérifie la qualité statique : formatage du code, analyse statique et
+vérification de types. Le service applicatif est soumis à une analyse statique de
+niveau 5, le service d'intelligence à une vérification de types stricte, et
+l'interface à une vérification de types complète sur les composants.
+
+Le deuxième exécute la suite de tests. Il démarre les services nécessaires,
+applique les migrations et lance l'ensemble des tests.
+
+Le troisième recherche les secrets accidentellement commites, sur l'intégralité
+de l'historique et non seulement sur la dernière révision.
+
+Un point mérite d'être souligné : l'analyse statique du service applicatif
+s'appuie sur une base de référence recensant les avertissements préexistants. La
+chaîne échoue lorsqu'un nouvel avertissement apparaît, mais tolère ceux qui
+figurent déjà dans la base. Un seuil qui échoue dès le premier jour est désactive
+en fin de semaine ; un seuil qui protège contre la régression survit.
+
+\section{Structure et découpage du projet}
+
+\subsection{Backlog du produit}
+
+Le backlog a été organise en epopées correspondant aux domaines fonctionnels
+identifiés. Le tableau \ref{tab:backlog} en présente la structure ainsi que
+l'incrément de rattachement.
+
+\begin{table}[htbp]
+\centering
+\caption{Backlog du produit et rattachement aux incréments}
+\label{tab:backlog}
+\small
+\begin{tabularx}{\textwidth}{@{}llXl@{}}
+\toprule
+\textbf{Code} & \textbf{Epopée} & \textbf{Contenu principal} & \textbf{Inc.} \\
+\midrule
+EP-01 & Socle et sécurité & Authentification, espaces de travail, rôles, cloisonnement & 1 \\
+EP-02 & Intégrations & Connexion des fournisseurs, import des dépôts, webhooks & 1 \\
+EP-03 & Ingestion & Normalisation, exécutions, travaux, étapes, idempotence & 1 \\
+EP-04 & Journaux & Récupération, occultation, extraction du bloc d'erreur & 2 \\
+EP-05 & Classification & Taxonomie, moteur de règles, signature de défaillance & 2 \\
+EP-06 & Intelligence & Vectorisation, recherche par similarité, RAG, analyse & 3 \\
+EP-07 & Interface & Tableaux de bord, page de défaillance, recherche & 3 \\
+EP-08 & Remédiation & Politiques, exécuteurs, approbation, application de correctif & 4 \\
+EP-09 & Supervision & Références, détection d'anomalies, analytique & 4 \\
+EP-10 & Temps réel & Diffusion WebSocket, notifications & 5 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Structuration des releases}
+
+Les incréments ont été définis de manière à produire à chaque étape un système
+utilisable, même incomplet. Le tableau \ref{tab:releases} en résumé le contenu et
+l'objectif de validation.
+
+\begin{table}[htbp]
+\centering
+\caption{Incréments et objectifs de validation}
+\label{tab:releases}
+\small
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+\textbf{Inc.} & \textbf{Intitule} & \textbf{Objectif de validation} \\
+\midrule
+1 & Observer & Une exécution réelle apparaît dans l'interface, tous fournisseurs confondus, sans aucune intelligence \\
+2 & Comprendre & Le bloc d'erreur est extrait et classe correctement, les données sensibles sont occultées \\
+3 & Expliquer & Une cause probable est produite avec des preuves référencées et un coût mesure \\
+4 & Agir & Une remédiation franchit la politique, obtient une approbation et ouvre une demande de fusion \\
+5 & Réagir & Les mises à jour apparaissent sans rechargement de page \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Diagramme de cas d'utilisation global}
+
+Le diagramme de la figure \ref{fig:usecase} synthétise les interactions entre les
+acteurs et le système. Les relations d'inclusion et d'extension y font apparaître
+deux contraintes structurantes du domaine : l'analyse d'une défaillance inclut
+systématiquement l'occultation des données sensibles, et l'exécution d'une
+remédiation inclut obligatoirement l'évaluation de la politique.
+
+\schemaph{Diagramme de cas d'utilisation global}{fig:usecase}{10cm}{%
+Crée un diagramme de cas d'utilisation UML professionnel, style plat, fond blanc,
+palette vert fonce et gris, avec un cadre rectangulaire représentant le système
+PipeMind. Acteurs a gauche : Développeur, Responsable technique, Propriétaire de
+l'espace, dessinés en bonhommes batons. Acteur a droite : Fournisseur CI, dessine
+en rectangle avec le stéréotype système externe. Cas d'utilisation dans le cadre,
+en ellipses : Consulter les exécutions, Consulter une défaillance, Déclencher une
+analyse, Corriger une catégorie, Demander une remédiation, Approuver une
+remédiation, Gérer les intégrations, Définir les politiques, Fixer le plafond de
+dépense, Recevoir un événement d'exécution, Gérer la base de connaissances.
+Relations : le Responsable technique hérite du Développeur, le Propriétaire
+hérite du Responsable technique, avec des fleches d'héritage en triangle creux.
+Ajouté une relation include en pointillés de Déclencher une analyse vers Occulter
+les données sensibles, et une relation include en pointillés de Approuver une
+remédiation vers Évaluer la politique. Ajouté une noté attachée a Approuver une
+remédiation indiquant : le demandeur ne peut pas approuver sa propre demande.}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+La spécification fait apparaître un système dont la difficulté ne réside pas dans
+le volume fonctionnel mais dans deux contraintes transversales : le cloisonnement
+strict des données entre espaces de travail et la frontière d'exécution qui
+interdit au service d'intelligence toute action effective. L'architecture en
+quatre dépôts et la chaîne de traitement asynchrone répondent à ces contraintes.
+Les trois chapitres suivants détaillent leur réalisation.
+
+\clearpage
+% ============================================================================
+%  CHAPITRE 3
+% ============================================================================
+\chapter{Socle applicatif et chaîne d'ingestion}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Ce chapitre couvre le premier incrément : le socle sur lequel repose tout le
+reste. Il présente trois modules, le cloisonnement multi-locataire,
+l'abstraction des fournisseurs et la chaîne d'ingestion, chacun aborde sous
+l'angle de la conception puis de la réalisation. Ces modules ne contiennent
+aucune intelligence artificielle, mais leur exactitude conditionne celle de tout
+ce qui vient ensuite : une analyse produite à partir de données mal normalisées
+serait fausse quelle que soit la qualité du modèle.
+
+\section{Module de cloisonnement multi-locataire}
+
+\subsection{Conception}
+
+La plateforme héberge plusieurs espaces de travail sur une même instance et une
+même base. Ce choix simplifie l'exploitation mais fait du cloisonnement une
+propriété critique : une erreur de filtrage expose les journaux de compilation
+d'une organisation à une autre.
+
+Trois stratégies étaient envisageables. La séparation par base de données offre
+la garantie la plus forte mais complique les migrations et interdit toute requête
+transversale. La séparation par schéma constitue un compromis intermédiaire. La
+séparation par colonne discriminante, retenue ici, conserve une base unique et
+ajouté à chaque table un identifiant d'espace.
+
+Cette dernière approche présente un risque connu : il suffit d'oublier une clause
+de filtrage dans une requête pour ouvrir une brèche. La conception a donc
+déplacé la responsabilité du filtrage depuis l'appelant vers le modèle lui-même,
+au moyen d'une portée globale appliquée automatiquement à toute requête.
+
+Deux situations ont demande un traitement particulier.
+
+La première concerne les traitements asynchrones. Une tâche exécutée par le
+gestionnaire de files n'appartient a aucune requête HTTP et ne dispose donc
+d'aucun espace courant. La portée globale, ne trouvant pas d'espace, laisse alors
+passer toutes les lignes. Ce comportement est volontaire, car une portée qui
+retournerait un ensemble vide rendrait les tâches inopérantes, mais il impose que
+chaque tâche lié explicitement son espace avant d'accéder aux données.
+
+La seconde concerne les entités dépourvues d'identifiant d'espace. Une exécution
+et un travail appartiennent à un espace uniquement par l'intermédiaire de leur
+projet. La portée globale n'a alors aucune colonne sur laquelle filtrer, et la
+résolution d'un identifiant dans une adresse retournerait n'importe quelle ligne.
+
+\subsection{Réalisation}
+
+Le filtrage automatique est implante sous forme d'une portée globale attachée aux
+modèles porteurs d'un identifiant d'espace. Elle intercepte toute construction de
+requête et y ajouté la condition de restriction.
+
+Pour les traitements asynchrones, une fonction utilitaire lié temporairement un
+espace le temps d'une fermeture, puis rétablit l'état antérieur. Cette contrainte
+est vérifiée automatiquement : un test parcourt le code source de chaque tâche,
+en retire les commentaires, et échoue si une tâche accédant à des données
+cloisonnées ne comporte pas d'appel effectif à cette fonction. Le retrait
+préalable des commentaires évite qu'une simple mention en commentaire ne satisfasse
+la vérification.
+
+Pour les entités cloisonnées indirectement, un trait dédié surcharge la
+résolution des identifiants d'adresse et impose une jointure vers la table des
+projets. Ce trait est ne d'un défaut réel découvert pendant le développement : le
+point d'entrée servant les journaux de travail acceptait l'identifiant de
+n'importe quel espace, exposant ainsi la donnée la plus sensible du système.
+
+\begin{lstlisting}[language=PHP,caption={Resolution d'identifiant contrainte par l'espace de travail}]
+public function resolveRouteBinding($value, $field = null): ?Model
+{
+    $teamId = currentTeamId();
+
+    if (! $teamId) {
+        return null;
+    }
+
+    return $this->newQuery()
+        ->where($field ?? $this->getRouteKeyName(), $value)
+        ->whereHas(
+            static::teamScopeRelation(),
+            fn ($query) => $query->where('projects.team_id', $teamId),
+        )
+        ->first();
+}
+\end{lstlisting}
+
+Une suite de tests dédiée vérifie l'ensemble du dispositif : elle contrôle que
+les requêtes sont bien filtrées, qu'un identifiant étranger retourne une erreur
+404 plutôt que la donnée, que les identifiants de connexion aux fournisseurs et
+les clés de modèle ne sont jamais sérialisés dans une réponse, et que la portée
+est effectivement inerte lorsqu'aucun espace n'est lié.
+
+\section{Module d'intégration des fournisseurs}
+
+\subsection{Conception}
+
+L'un des objectifs du projet est d'offrir une vue unifiée sur des fournisseurs
+hétérogènes. GitLab, GitHub Actions et Jenkins différent sur presque tout : la
+structure de leurs charges utiles, leur vocabulaire de statuts, leur mécanisme
+d'authentification, la manière dont ils signent leurs requêtes et le format de
+leurs journaux.
+
+La conception isole ces différences derrière une interface unique. Aucun
+composant situé au-dessus de cette interface ne sait de quel fournisseur provient
+une donnée. L'interface couvre la vérification des identifiants, la liste des
+dépôts distants, l'enregistrement des webhooks, la vérification de signature, la
+normalisation des charges utiles, la lecture des journaux et les actions de
+relance.
+
+Le vocabulaire des statuts a demande un travail spécifique. GitLab distingue une
+dizaine d'états, GitHub sépare un état d'avancement d'une conclusion, Jenkins
+expose un résultat et un indicateur d'exécution. Un composant de correspondance
+centralise ces traductions vers un vocabulaire interne unique.
+
+\subsection{Réalisation}
+
+Quatre adaptateurs implantent l'interface. Un registre associe la clé d'un
+fournisseur à son adaptateur, ce qui permet d'en ajouter un sans modifier le
+code appelant.
+
+La correspondance des statuts est vérifiée par des tests paramètres couvrant
+l'intégralité des valeurs documentées par chaque fournisseur. Le tableau
+\ref{tab:statuts} en donne un extrait.
+
+\begin{table}[htbp]
+\centering
+\caption{Extrait de la correspondance des statuts entre fournisseurs}
+\label{tab:statuts}
+\small
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+\textbf{Fournisseur} & \textbf{Valeur source} & \textbf{Statut interne} \\
+\midrule
+GitLab & created, waiting\_for\_resource, preparing, pending & pending \\
+GitLab & running, canceling & running \\
+GitLab & failed & failed \\
+GitHub & queued, requested, waiting & pending \\
+GitHub & completed + conclusion failure & failed \\
+GitHub & completed + conclusion timed\_out & timeout \\
+GitHub & completed + conclusion inconnue & failed \\
+Jenkins & UNSTABLE & failed \\
+Jenkins & result nul et en cours & running \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Deux décisions de ce tableau méritent d'être justifiées. Une conclusion GitHub
+inconnue est traitée comme un échec plutôt que comme un succès : en cas
+d'ambiguïté, signaler a tort vaut mieux que masquer une défaillance réelle. De
+même, le statut \texttt{UNSTABLE} de Jenkins, qui désigne une compilation réussie
+dont certains tests ont échoue, est ramené à un échec, car c'est bien ce qu'il
+représente du point de vue de l'utilisateur.
+
+La vérification des signatures est propre à chaque fournisseur. GitHub signe le
+corps brut de la requête par HMAC-SHA256, GitLab transmet un jeton en clair dans
+un en-tête. Un point subtil a été traite lors de la réalisation : la vérification
+doit porter sur le corps brut de la requête et non sur sa représentation
+désérialisée puis resérialisée, faute de quoi une simple différence d'ordre des
+clés invalide une signature pourtant correcte.
+
+\captureph{Assistant de connexion à un fournisseur d'intégration continue}{fig:wizard}{7cm}
+
+\section{Module d'ingestion et de normalisation}
+
+\subsection{Conception}
+
+L'ingestion transforme une charge utile propre à un fournisseur en un ensemble
+d'entités internes : une exécution, ses étapes, ses travaux, les fichiers
+modifiés par le commit associe et, le cas echeant, une défaillance.
+
+Trois exigences ont structure cette conception.
+
+L'idempotence est nécessaire car les fournisseurs relivrent les événements en cas
+de doute sur leur réception. La déduplication s'appuie sur un identifiant de
+livraison lorsque le fournisseur en fournit un, et sur le couple projet et
+identifiant externe sinon.
+
+La tolérance au désordre répond au fait que les événements n'arrivent pas
+toujours dans l'ordre. Une règle explicite interdit de ramener une exécution
+terminée à un état en cours.
+
+La résilience impose que l'échec d'une opération annexe n'empêche pas
+l'enregistrement de l'essentiel. Si la récupération d'un journal échoue parce
+qu'il a expiré chez le fournisseur, la défaillance est tout de même enregistrée,
+avec la mention de l'indisponibilité du journal.
+
+\subsection{Réalisation}
+
+L'ingestion est déclenchée par une tâche asynchrone qui charge l'événement brut,
+identifie le projet, puis délègue la normalisation à l'adaptateur du fournisseur.
+L'ensemble des écritures se déroule dans une transaction.
+
+Un incident survenu en cours de développement illustre l'importance de cette
+couche. Après la mise en service de l'intégration GitHub, aucune exécution
+n'apparaissait dans l'interface alors que la connexion était établie et que les
+événements arrivaient. L'examen des enregistrements a montré que dix-huit
+livraisons consécutives avaient échoue au même endroit. La cause tenait à une
+particularité de GitHub : les événements de type \texttt{workflow\_job} décrivent
+un travail isole et ne contiennent ni identifiant d'exécution ni objet
+d'exécution englobant. Le code de normalisation, écrit pour les événements
+\texttt{workflow\_run}, lisait une clé absente et levait une exception.
+
+La correction a consisté à distinguer les deux natures d'événement et à introduire
+un chemin de traitement spécifique pour les événements de travail, qui rattache
+le travail à l'exécution existante au lieu d'en créer une nouvelle. Ce chemin a
+lui-même révélé un second défaut : le vocabulaire interne des statuts de travail
+n'accepte pas la valeur \texttt{queued} employée pour les exécutions, ce qui a
+impose d'ajouter une correspondance dédiée aux travaux dans les quatre
+adaptateurs.
+
+Cet épisode a une portée qui dépasse le cas particulier. Les deux défauts
+n'auraient pas été détectés par les tests unitaires existants, qui utilisaient
+des charges utiles de référence construites à la main. Ils ont été révélés par la
+confrontation à un dépôt réel, ce qui a conduit à compléter le jeu de tests avec
+des charges utiles capturées en production.
+
+\schemaph{Modèle de données simplifie du domaine}{fig:erd}{10cm}{%
+Crée un diagramme entité-association propre et lisible, style plat, palette vert
+fonce et gris, fond blanc, notation avec pattes de corbeau. Entités et attributs
+principaux : Team (id, name, slug), Project (id, team_id, name, slug,
+default_branch), Intégration (id, team_id, provider, status), Pipeline (id,
+project_id, external_id, iid, status, ref, commit_sha, duration_seconds),
+PipelineJob (id, pipeline_id, name, status, external_id), JobLog (id, job_id,
+excerpt, error_block, is_redacted), Failure (id, team_id, project_id,
+pipeline_id, job_id, signature_id, category, severity, error_message),
+FailureSignature (id, team_id, hash, is_known, known_resolution), Analysis (id,
+failure_id, root_cause, confidence, cost_usd, used_rag), Recommendation (id,
+analysis_id, action_type, risk, patch, policy_decision), Remédiation (id,
+project_id, failure_id, action_type, status, approved_by), FailureEmbedding (id,
+failure_id, embedding vector 384). Relations : Team 1 vers N Project, Project 1
+vers N Pipeline, Pipeline 1 vers N PipelineJob, PipelineJob 1 vers 1 JobLog,
+Pipeline 1 vers N Failure, FailureSignature 1 vers N Failure, Failure 1 vers N
+Analysis, Analysis 1 vers N Recommendation, Recommendation 1 vers 1 Remédiation,
+Failure 1 vers 1 FailureEmbedding. Mets en evidence FailureSignature avec une
+bordure plus épaisse et une noté indiquant : clé de déduplication, de cache et
+d'historique.}
+
+Le modèle comporte trente et une tables de domaine. La figure \ref{fig:erd} n'en
+représente que les principales, celles qui portent la chaîne allant de
+l'exécution jusqu'à la remédiation.
+
+\captureph{Vue d'ensemble des projets d'un espace de travail}{fig:projets}{7cm}
+
+\captureph{Liste des exécutions d'un projet avec filtres par statut et par branche}{fig:pipelines}{7cm}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+Le socle applicatif fournit les garanties sur lesquelles reposent les chapitres
+suivants : un cloisonnement vérifie par des tests plutôt que par convention, une
+abstraction des fournisseurs qui isole leurs différences, et une chaîne
+d'ingestion idempotente et tolérante au désordre. Les deux défauts décrits dans
+ce chapitre, l'exposition des journaux entre espaces et l'échec silencieux des
+événements de travail GitHub, illustrent un point de méthode : la confrontation
+précoce à des données réelles a plus de valeur qu'une couverture de tests
+construite sur des hypothèses.
+
+\clearpage
+% ============================================================================
+%  CHAPITRE 4
+% ============================================================================
+\chapter{Moteur d'analyse intelligente}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Ce chapitre présente le coeur du projet : la chaîne qui transforme un journal
+d'exécution en une cause probable accompagnée de preuves. Quatre modules la
+composent, le traitement des journaux, la classification, la mémoire vectorielle
+et la génération de l'analyse. Chacun est présente sous l'angle de la conception
+puis de la réalisation, en s'appuyant sur les mesures consignées dans le dépôt
+d'expérimentations.
+
+\section{Module de traitement des journaux}
+
+\subsection{Conception}
+
+Un journal de travail brut ne peut pas être soumis directement à un modèle de
+langage. Sa taille dépasse fréquemment la fenêtre de contexte disponible, son
+coût serait prohibitif, et il contient presque toujours des données sensibles.
+
+Le traitement s'organise donc en trois opérations successives.
+
+L'occultation vient en premier, avant toute écriture en base. Ce choix est
+délibéré : occulter après stockage laisserait une fenêtre pendant laquelle les
+secrets figurent en clair. Les règles couvrent les jetons des fournisseurs
+courants, les clés de modèles, les chaînes de connexion aux bases, les adresses
+électroniques, les adresses IP privées et les en-têtes d'autorisation.
+
+L'extraction du bloc d'erreur vient ensuite. Elle identifie la région du journal
+qui porte l'information de défaillance, en s'appuyant sur des marqueurs
+lexicaux et sur la structure des traces d'appel, puis conserve un contexte de
+quelques lignes de part et d'autre.
+
+La troncature intervient en dernier recours, avec conservation prioritaire de la
+fin du journal, où se trouve généralement l'erreur terminale.
+
+\subsection{Réalisation}
+
+Le traitement est expose par le service d'intelligence sous forme d'un point
+d'entrée qui reçoit un journal brut et retourne un extrait occulte, un bloc
+d'erreur isole et, lorsqu'elle existe, une trace d'appel structurée.
+
+Une mesure a guide le dimensionnement de l'extrait. Sur un échantillon de
+journaux réels, l'extraction ramene une sortie de plusieurs dizaines de milliers
+de lignes à un extrait de quelques centaines, sans perte du message
+d'erreur terminal dans les cas testes. Le protocole et les résultats figurent
+dans le dépôt d'expérimentations sous la référence \texttt{log-processing-v1}.
+
+Un enrichissement important a été ajouté après une première série d'analyses
+jugées trop génériques. Le service applicatif joint désormais au dossier les
+différences des fichiers modifiés par le commit fautif, et non plus la seule
+liste de leurs noms. L'effet a été immédiat et mesurable. Sur une défaillance
+réelle provoquée par une balise JSX mal fermée, l'analyse produite avant
+l'enrichissement se limitait a conseiller de vérifier les modifications
+récentes. Après enrichissement, elle identifiait la balise fautive et en
+proposait la correction exacte. Le coût de l'invite est passe de 550 à 3153
+jetons, soit environ 0,0023 dollar, ce qui reste quatre fois en deçà de la cible
+fixée à 0,01 dollar par analyse.
+
+\section{Module de classification}
+
+\subsection{Conception}
+
+Classer une défaillance dans une taxonomie technique remplit trois fonctions :
+orienter la recherche d'historique, alimenter les statistiques, et permettre au
+modèle de langage de raisonner dans un cadre plutôt que dans le vide.
+
+La taxonomie retenue comporte une dizaine de catégories : dépendances,
+compilation, tests, base de données, réseau, configuration, conteneur,
+ressources, permissions et inconnu.
+
+Une architecture hybride à trois étages a été conçue. Un moteur de règles
+lexicales traite les cas non ambigus, immédiatement et sans coût. Un classifieur
+appris doit prendre le relais sur les cas incertains. Le modèle de langage
+tranche en dernier recours et peut corriger la catégorie au moment de l'analyse.
+
+L'ordre importe : le chemin le moins coûteux est essaye en premier, et le modèle
+n'est sollicite que lorsque les étages précédents n'ont pas conclu avec une
+confiance suffisante.
+
+\subsection{Réalisation}
+
+Le moteur de règles est opérationnel et couvre l'ensemble de la taxonomie. Le
+classifieur appris n'a pas pu être entraîné, pour une raison qui tient aux
+données et non à la technique : son ensemble d'apprentissage provient
+exclusivement des corrections saisies par les utilisateurs dans l'interface, et
+aucune correction n'a encore été enregistrée. Le seuil fixe pour un résultat
+exploitable est de huit cents exemples étiquetés avec un minimum de quarante par
+catégorie. Cette limite est assumée et discutée au chapitre 5.
+
+La validation disponible reste donc indirecte : sur sept défaillances réelles
+couvrant sept catégories distinctes, la catégorie proposée par le moteur de
+règles et celle retenue par le modèle de langage ont coïncide dans les sept cas.
+Cette concordance ne remplacé pas une mesure de F-mesure sur un jeu de test
+étiqueté, et le rapport ne la présente pas comme telle.
+
+\subsection{Signature de défaillance}
+
+La signature est le mécanisme qui donne au système sa mémoire. Elle est calculée
+en normalisant le message d'erreur, c'est-a-dire en remplaçant par des marqueurs
+génériques tout ce qui varie d'une exécution à l'autre : horodatages, chemins
+absolus, identifiants de processus, numéros de port, sommes de contrôle.
+
+Un défaut instructif a été découvert lors des essais sur données réelles. La
+règle de normalisation des nombres ne s'appliquait qu'aux suites d'au moins trois
+chiffres. Un identifiant de processus tel que \texttt{pid=4821} était donc
+normalisé, tandis que \texttt{pid=99} ou \texttt{pid=7} ne l'étaient pas. La
+conséquence était grave : deux occurrences de la même défaillance recevaient des
+signatures différentes, la déduplication ne fonctionnait plus, le cache
+n'atteignait jamais, et l'historique restait vide. Le système paraissait
+fonctionner tout en perdant sa fonction principale.
+
+La correction a consisté à introduire une règle ciblée, appliquée avant la règle
+générique, qui reconnaît les identifiants à portée d'exécution par leur nom.
+
+\begin{lstlisting}[language=Python,caption={Normalisation des identifiants a portee d'execution}]
+# Applique AVANT la regle generique sur les nombres : un identifiant de
+# processus court echappait au seuil de trois chiffres, et chaque
+# occurrence d'une meme defaillance recevait alors une signature distincte.
+(re.compile(r"\b(pid|ppid|tid|thread|worker|job|build|run|attempt|retry|try|seq)"
+            r"\s*[:=#]?\s*\d+\b", re.IGNORECASE), r"\1=<num>"),
+(re.compile(r"\b\d{3,}\b"), "<num>"),
+\end{lstlisting}
+
+La mesure réalisée après correction montre un taux de regroupement de 3,22, ce
+qui signifie que les défaillances enregistrées se ramènent en moyenne à un tiers
+de problèmes distincts.
+
+\section{Module de mémoire vectorielle et recherche augmentée}
+
+\subsection{Conception}
+
+La recherche augmentée par récupération exploite trois sources : les défaillances
+passées semblables, la résolution confirmée associée à la signature courante, et
+la base de connaissances propre à l'équipe.
+
+Les défaillances sont representées par un vecteur de 384 dimensions calcule
+localement, ce qui évite d'envoyer le contenu des journaux à un service tiers
+pour la seule vectorisation. La recherche s'appuie sur un index HNSW et sur la
+distance cosinus fournis par l'extension pgvector.
+
+Un point de conception mérite d'être souligné : le texte vectorisé n'est pas le
+journal brut mais une composition normalisée associant le message d'erreur, la
+catégorie et l'écosystème. Vectoriser un journal brut donnerait des vecteurs
+dominés par les horodatages et les chemins, rendant tous les journaux similaires
+entre eux.
+
+\subsection{Réalisation et calibration des seuils}
+
+La réalisation de ce module a produit le résultat expérimental le plus
+instructif du projet, et il concerne un échec.
+
+Le seuil de similarité avait été fixé à 0,75 par analogie avec des valeurs
+couramment citées pour la comparaison de phrases. Ce seuil ne retournait aucun
+résultat. La mesure a montré que sur dix paires de défaillances réelles
+manuellement étiquetées comme apparentées, la similarité la plus élevée
+atteignait 0,5865. Autrement dit, aucune paire authentiquement liée n'aurait
+jamais franchi le seuil. La fonction de recherche d'historique était
+silencieusement inopérante, sans lever la moindre erreur : elle retournait un
+ensemble vide, ce qui est indiscernable d'une absence légitime d'historique.
+
+Le seuil a été ramené à 0,55 et un classement tenant compte de la catégorie a été
+ajouté. L'ensemble est consigné sous la référence \texttt{similarity-threshold}.
+
+Le même problème s'est reproduit sur la base de connaissances, ce qui a conduit à
+une seconde campagne de mesure dont les résultats figurent au tableau
+\ref{tab:seuils}.
+
+\begin{table}[htbp]
+\centering
+\caption{Calibration du seuil de récupération des documents de connaissance}
+\label{tab:seuils}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Seuil} & \textbf{Rappel} & \textbf{Faux positifs} & \textbf{Précision} \\
+\midrule
+0,60 & 4 / 6 & 0 & 1,00 \\
+0,50 & 5 / 6 & 0 & 1,00 \\
+\textbf{0,40} & \textbf{6 / 6} & \textbf{1} & \textbf{0,86} \\
+0,30 & 6 / 6 & 4 & 0,60 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Le seuil de 0,40 a été retenué. Le raisonnement est asymétrique : un document
+faiblement pertinent ajoute quelques centaines de jetons à l'invite, alors qu'un
+document pertinent manque prive l'analyse de la réponse que l'équipe avait déjà
+écrite.
+
+L'investigation a mis au jour un troisième défaut, plus subtil. Le découpage des
+documents visait des fragments d'environ 400 jetons, alors que le modèle de
+vectorisation employe ne lit que 256 unités lexicales et tronque
+silencieusement le reste. Un fragment mesure atteignait 400 unités, dont 144
+n'étaient jamais vectorisées, et 515 sur un texte riche en code. La section
+décrivant la correction d'un document se trouvait ainsi hors de portée de la
+recherche, quelle que soit sa qualité de rédaction.
+
+Le tableau \ref{tab:decoupage} présente le balayage qui a permis de fixer la
+taille des fragments.
+
+\begin{table}[htbp]
+\centering
+\caption{Influence de la taille des fragments sur la récupération}
+\label{tab:decoupage}
+\small
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+\textbf{Cible (jetons)} & \textbf{Fragments} & \textbf{Max. unités} & \textbf{Tronques} & \textbf{Score} \\
+\midrule
+400 & 2 & 400 & 1 & 0,334 \\
+300 & 2 & 321 & 1 & 0,334 \\
+220 & 3 & 219 & 0 & 0,349 \\
+\textbf{150} & \textbf{5} & \textbf{146} & \textbf{0} & \textbf{0,573} \\
+90 & 7 & 97 & 0 & 0,573 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Deux effets encadrent ce choix. Au-delà d'environ 230 jetons, la fin du fragment
+est tronquée et devient introuvable. En deçà d'environ 120, le fragment perd le
+contexte qui le rendait spécifique et commence à répondre à des requêtes sans
+rapport, le score des documents non pertinents passant de 0,185 à 0,362.
+
+Un dernier obstacle restait. Même correctement dimensionnée, la recherche
+retrouvait la section décrivant le symptôme mais jamais celle décrivant la
+correction. La mesure en donne la raison : dans un document de procédure, seule la
+section du symptôme est rédigée dans les mots de l'erreur. La section de la
+correction décrit un remède et ne partage presque aucun vocabulaire avec le
+message d'échec. Sur un document réel, le fragment du symptôme obtenait 0,573
+tandis que celui contenant la correction obtenait 0,059, une valeur pratiquement
+orthogonale à la requête. Aucun seuil ne sépare 0,059 du bruit.
+
+La solution retenue consiste à traiter les fragments trouves comme des amorces et
+a joindre systématiquement leurs voisins dans le document. Les voisins d'un
+fragment pertinent ne sont pas du contexte supplémentaire, ils sont la réponse.
+
+\schemaph{Chaîne de récupération augmentée et expansion aux fragments voisins}{fig:rag}{9cm}{%
+Crée un diagramme de flux horizontal professionnel, style plat, palette vert
+fonce, gris et blanc. De gauche a droite : une boîte Message d'erreur normalise,
+une fleche vers une boîte Vectorisation locale MiniLM 384 dimensions, une fleche
+vers un cylindre PostgreSQL avec pgvector index HNSW. Depuis le cylindre, trois
+fleches divergentes vers trois boîtes : Défaillances similaires seuil 0.55,
+Résolution confirmée de la signature, Documents de connaissance seuil 0.40. Sous
+la troisième boîte, un encadre intitule Expansion aux voisins montrant une bande
+de cinq rectangles numérotés 0 à 4 ou le rectangle 0 est surligné en vert et
+étiqueté Amorce trouvée score 0.573, et les rectangles 1 et 2 sont surlignes en
+vert clair et étiquetés Voisins joints, le rectangle 2 portant en plus la mention
+Contient la correction score 0.059. Les trois boîtes convergent par des fleches
+vers une boîte finale Dossier d'analyse. Ajouté une noté sous l'encadre :
+seule la section du symptôme est rédigée dans les mots de l'erreur.}
+
+L'effet sur la réponse finale a été mesuré sur une même défaillance, avec le même
+modèle et le même journal, en ne faisant varier que le passage récupère. Sans
+expansion, la cause énoncée restait prudente et la recommandation se limitait a
+vérifier la disponibilité du service de base de données. Avec expansion, la cause
+était affirmative et la recommandation reprenait la procédure exacte consignée
+par l'équipe, en nommant la condition de santé a ajouter au fichier de
+composition. Le surcoût est de 301 jetons d'invite et de 0,0005 dollar.
+
+\section{Module de génération de l'analyse}
+
+\subsection{Conception}
+
+L'analyse suit un ordre strict, chaque étape pouvant interrompre la chaîne avant
+la suivante : occultation de sécurité, classification, récupération,
+court-circuit sur signature connue, vérification du budget, appel au modèle,
+calibration de la confiance, puis assainissement de la réponse.
+
+Le court-circuit mérite une explication. Lorsque la signature de la défaillance
+correspond à une résolution déjà confirmée par un humain et que le classifieur
+est suffisamment confiant, aucun appel au modèle n'est effectue. La réponse est
+construite à partir de la résolution enregistrée. C'est le chemin le moins
+coûteux, le plus rapide et le plus fiable des trois, puisque son contenu a été
+rédigé par une personne.
+
+L'assainissement de la réponse applique deux contrôles. Le premier vérifie que
+chaque élément de preuve porte une référence résoluble. Le second, plus
+important, rejette toute différence proposée qui modifierait un fichier dont le
+contenu n'a jamais été montré au modèle. Ce contrôle est structurel et ne repose
+pas sur la bonne volonté du modèle : une différence inventée possède exactement
+la même forme qu'une différence authentique, et rien dans son texte ne permet de
+les distinguer.
+
+\subsection{Réalisation}
+
+Le service d'intelligence expose l'analyse par un point d'entrée unique. La
+réponse est contrainte par un schéma qui impose la cause, le résumé,
+l'explication, la catégorie, la sévérité, la confiance, la liste des preuves avec
+leurs références et la liste des recommandations.
+
+Le risque associe à une recommandation n'est jamais lu depuis la réponse du
+modèle. Il est déduit du type d'action par une table figée dans le code. Un
+modèle capable de qualifier de faible risque un retour arrière en production
+pourrait sinon franchir le moteur de politiques par la seule rédaction de sa
+réponse.
+
+Une mesure sur sept défaillances réelles couvrant sept catégories donne une
+latence médiane de 4,14 secondes, un coût moyen de 0,0015 dollar par analyse,
+quinze éléments de preuve sur quinze porteurs d'une référence valide, aucune
+réponse JSON invalide et une concordance de sept sur sept entre le classifieur et
+le modèle. Une vérification manuelle a confirmé que les références citées
+existaient réellement.
+
+\schemaph{Chaîne de traitement d'une analyse}{fig:pipeline-ia}{9cm}{%
+Crée un diagramme de flux vertical professionnel avec branches conditionnelles,
+style plat, palette vert fonce, gris et rouge fonce, fond blanc. Sequence du haut
+vers le bas : boîte Journal brut reçu, fleche vers boîte Occultation des données
+sensibles avec annotation 24 règles, fleche vers boîte Extraction du bloc
+d'erreur, fleche vers boîte Classification par règles, fleche vers losange
+décisionnel Signature déjà résolue et confiance supérieure à 0.85. Depuis le
+losange, branche Oui vers une boîte verte Réponse construite depuis la résolution
+confirmée, coût zéro, avec une fleche allant directement vers la boîte finale.
+Branche Non vers losange Budget mensuel disponible. Depuis ce losange, branche
+Non vers une boîte rouge Analyse refusée, budget épuise. Branche Oui vers boîte
+Récupération augmentée, puis boîte Appel au modèle de langage, puis boîte
+Calibration de la confiance, puis boîte Assainissement et validation des
+références, puis boîte finale Analyse persistée. Ajouté une noté à côté de la
+boîte Assainissement : toute différence touchant un fichier non montre au modèle
+est rejetée.}
+
+\captureph{Page de défaillance : séparation entre faits observes et analyse}{fig:failure}{8cm}
+
+\captureph{Panneau d'analyse avec cause, preuves référencées et niveau de confiance}{fig:analysis}{8cm}
+
+\captureph{Recommandation accompagnée de la différence proposée}{fig:patch}{7cm}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+Le moteur d'analyse atteint son objectif fonctionnel : il produit une cause
+probable, des preuves vérifiables et, lorsque le contexte le permet, un correctif
+applicable, pour un coût mesure de l'ordre de 0,0015 dollar et une latence
+médiane de quatre secondes.
+
+Le principal enseignement de ce chapitre n'est cependant pas ce résultat mais la
+manière dont trois défauts ont été trouves. Le seuil de similarité, le seuil de
+récupération et la taille des fragments avaient tous trois été fixés par
+analogie, et tous trois rendaient une fonction silencieusement inopérante. Aucun
+ne levait d'erreur. Un seuil choisi sans mesure n'est pas un réglage, c'est un
+interrupteur qui désactive une fonctionnalité sans le dire.
+
+\clearpage
+% ============================================================================
+%  CHAPITRE 5
+% ============================================================================
+\chapter{Remédiation, supervision et interface}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Les chapitres précédents ont conduit le système jusqu'à une analyse argumentée.
+Ce chapitre traite de ce qui vient après : agir sur cette analyse sous le
+contrôle d'une politique, surveiller le comportement des chaînes pour détecter ce
+qui dérive sans échouer, diffuser les changements en temps réel, et restituer
+l'ensemble dans une interface exploitable. Il se termine par le dispositif de
+qualité et par les résultats mesures.
+
+\section{Module de remédiation}
+
+\subsection{Conception}
+
+La remédiation est la fonction la plus sensible du système, puisqu'elle est la
+seule à modifier quelque chose chez l'utilisateur. Sa conception repose sur un
+principe énoncé dès le départ : le service applicatif constitue la frontière
+d'exécution, et le modèle de langage ne touche jamais à une infrastructure. Le
+modèle propose, un moteur déterministe décide, un exécuteur agit.
+
+Le moteur de politiques évalue chaque recommandation selon cinq critères : le
+type d'action, le niveau de risque, la confiance associée, la branche concernée
+et un quota journalier.
+
+Cinq règles invariantes ont été posées.
+
+L'absence de politique vaut interdiction. Une action qu'aucune règle n'autorise
+explicitement ne s'exécute pas. Une lacune dans la table de configuration ne peut
+pas devenir une permission.
+
+Le risque découle du type d'action et jamais de la réponse du modèle. Cette règle
+a déjà été evoquée au chapitre 4 ; elle prend ici tout son sens, puisque c'est
+elle qui empêche un modèle de franchir la barrière en se déclarant inoffensif.
+
+La branche principale élève le risque d'un niveau. Relancer un travail sur une
+branche de fonctionnalité est une opération courante ; la même relance sur la
+branche principale modifie ce sur quoi l'ensemble de l'équipe travaille.
+
+Le quota journalier comptabilise les actions approuvées autant que les actions
+exécutées. Ne compter que les exécutions permettrait à une boucle de refus puis
+de nouvelle approbation d'épuiser le budget sans jamais apparaître.
+
+Une politique de projet peut affiner une politique d'espace mais ne peut jamais
+réadmettre une action que l'espace interdit. Sans cette règle, une interdiction
+générale ne serait qu'un conseil.
+
+\schemaph{Arbre de décision du moteur de politiques}{fig:policy}{10cm}{%
+Crée un arbre de décision professionnel, style plat, orientation verticale,
+palette vert fonce pour autorise, orange pour approbation requise, rouge fonce
+pour interdit, fond blanc. Racine : Recommandation produite. Premier losange :
+Une politique activée existe pour ce type d'action. Branche Non vers boîte rouge
+Interdit, absence de politique. Branche Oui vers losange Le mode est interdit.
+Branche Oui vers boîte rouge Interdit par la politique. Branche Non vers losange
+Le risque effectif dépasse le plafond automatique, avec une noté indiquant risque
+issu du type d'action, élève d'un niveau sur la branche principale. Branche Oui
+vers boîte orange Approbation requise. Branche Non vers losange La confiance
+atteint le seuil. Branche Non vers boîte orange Approbation requise. Branche Oui
+vers losange La branche est autorisée et non bloquée. Branche Non vers boîte
+orange Approbation requise. Branche Oui vers losange Le quota journalier est
+atteint. Branche Oui vers boîte orange Approbation requise. Branche Non vers
+losange Le mode est automatique. Branche Oui vers boîte verte Exécution
+automatique. Branche Non vers boîte orange Approbation requise. Ajouté une noté
+laterale : le quota compte les actions approuvées et exécutées.}
+
+\subsection{Réalisation}
+
+Cinq exécuteurs implantent les actions possibles : relance d'un travail, relance
+d'une exécution, ouverture d'un ticket, ouverture d'une demande de fusion et
+simple accuse de prise en compte. Chacun expose une vérification préalable, une
+raison de blocage lisible et un mode simulation qui décrit l'action sans
+l'accomplir.
+
+L'ouverture d'une demande de fusion est la seule opération qui écrit du code.
+Trois garanties y sont appliquées.
+
+La branche principale n'est jamais la cible d'un commit. La modification est
+deposée sur une branche nouvelle puis proposée, car la valeur d'un correctif
+suggére tient à ce qu'une personne le relise.
+
+Seuls les fichiers déclarés par la recommandation peuvent être modifiés. Une
+différence touchant un chemin que l'analyse n'a jamais mentionne est rejetée.
+
+Le contexte doit correspondre exactement. L'application de la différence est
+réalisée en analysant le format unifié et en réécrivant le contenu du fichier
+récupère par l'interface du fournisseur, plutôt qu'en clonant le dépôt et en
+invoquant un outil externe. Ce choix évite d'avoir des identifiants sur disque et
+un espace de travail par remédiation, mais il impose surtout une rigueur que les
+outils classiques n'appliquent pas : ceux-ci acceptent un décalage et ajustent le
+positionnement, ce qui convient à un humain qui relira le résultat et ne convient
+pas à un commit automatique que personne n'a encore lu. Un fichier modifie depuis
+l'analyse produit donc un refus explicite plutôt qu'une fusion approximative.
+
+Un défaut instructif a été trouvé par les tests d'intégration. Toute différence
+réelle se termine par un retour à la ligne, ce que la fonction de découpage
+transformait en un élément vide interprété comme une ligne de contexte vide. Le
+fragment exigeait alors du fichier une ligne inexistante et aucune différence ne
+s'appliquait. Les onze tests unitaires écrits jusque-là utilisaient des chaînes
+construites sans retour à la ligne final et passaient tous : ils validaient un cas
+plus facile que la réalité.
+
+Le contrôle à l'exécution est le dernier maillon. Une approbation autorise à agir
+à un instant donne, et du temps s'écoule avant l'exécution. La tâche réévalue
+donc la politique juste avant d'agir, vérifie que l'approbation n'a pas expiré,
+et s'assure qu'un humain n'a pas déjà résolu le problème entre-temps. Chacun de
+ces trois arrêts produit un statut distinct, afin que la trace indique lequel
+s'est déclenche.
+
+Le retour d'expérience est boucle par une tâche qui observe l'exécution
+consécutive à une relance. Si elle passe au vert, la résolution est promue au
+rang de résolution connue et toute occurrence ultérieure de la même signature
+sera résolue sans appel au modèle. Cette promotion n'écrase jamais une résolution
+rédigée par un humain, et elle n'enregistre aucun auteur, car personne ne l'a
+rédigée.
+
+\captureph{Page de remédiation : demandes en attente et historique}{fig:remédiation}{7.5cm}
+
+\captureph{Dialogue d'approbation avec conséquence annoncée et simulation}{fig:approval}{7.5cm}
+
+\section{Module de détection d'anomalies}
+
+\subsection{Conception}
+
+Un pipeline peut réussir tout en se dégradant. Un travail dont la durée double
+sur deux semaines finit par dépasser un délai maximal, mais aucune exécution
+individuelle n'échoue avant ce point. La détection d'anomalies vise ces
+évolutions.
+
+La conception compare chaque exécution à une référence calculée sur l'historique
+propre du travail, et non à un seuil absolu. Un travail de compilation lent par
+nature ne doit pas être signalé en permanence.
+
+Le choix de la statistique a été déterminant. La moyenne et l'écart type sont
+sensibles aux valeurs extrêmes, ce qui pose un problème direct ici : une
+exécution anormalement lente augmenté l'écart type et rend plus difficile la
+détection des suivantes. La médiane et l'écart absolu médian ont donc été
+retenus, avec un score z modifie.
+
+\subsection{Réalisation}
+
+Une commande calcule quotidiennement les références par couple projet et travail,
+en se limitant aux exécutions réussies afin de ne pas fausser la référence avec
+des durées tronquées par un échec.
+
+La première version de la détection mémoire employait un rapport fixe de 1,5 fois
+la référence. Sur vingt-quatre travaux, elle a produit vingt-deux anomalies, ce
+qui équivaut a n'en produire aucune : un tableau où tout est signalé n'apprend
+rien. Le passage au score z modifie a ramené ce nombre à trois, valeurs
+vérifiables individuellement. Le protocole figure sous la référence
+\texttt{anomaly-v1}.
+
+Un second défaut a été corrigé dans la foulée : la fermeture automatique d'une
+anomalie s'appuyait sur la durée quel que soit l'indicateur surveille, si bien
+qu'une anomalie de consommation mémoire pouvait être close par une amélioration
+de la durée. La vérification est désormais liée à l'indicateur concerne.
+
+\captureph{Vue des anomalies détectées avec écart mesure et référence}{fig:anomalies}{7cm}
+
+\section{Module temps réel}
+
+\subsection{Conception}
+
+L'interface affichait initialement les changements par interrogation périodique.
+Ce mécanisme fonctionne, mais il produit un délai perceptible et un trafic
+inutile. La diffusion par WebSocket a été ajoutée.
+
+Deux principes ont guide la conception.
+
+Le temps réel est une optimisation et jamais l'unique chemin. Chaque écran doit
+rester correct avec la diffusion désactivée, faute de quoi le repli par
+interrogation ne serait pas fiable. Les intervalles d'interrogation sont donc
+suspendus lorsque la connexion est active et reprennent des qu'elle tombe.
+
+Toute diffusion transite par la file d'attente. Un serveur WebSocket lent ou
+arrêté ne doit jamais bloquer l'ingestion : un événement reçu pendant une panne
+de diffusion doit tout de même être enregistré.
+
+\subsection{Réalisation}
+
+Neuf événements sont diffusés sur trois canaux, tous privés et autorisés par
+l'appartenance à l'espace de travail. Aucun canal public n'est utilise : les noms
+de projets, de branches et les extraits de journaux sont des données propres à
+l'entreprise, et un canal public les exposerait à quiconque devine un
+identifiant.
+
+Deux problèmes révélés par la réalisation méritent d'être rapportés.
+
+Le premier concerne la sérialisation. Les événements transportaient initialement
+une référence vers l'entité, rechargée au moment de la diffusion. Or cette
+diffusion s'exécute dans une tâche asynchrone ou aucun espace de travail n'est
+lié : le filtrage automatique retournait alors une entité nulle et la construction
+du message échouait. Comme le test s'exécutait avec une file synchrone, l'échec
+remontait jusqu'au point d'entrée du webhook et le transformait en erreur
+serveur. Une diffusion, dont le rôle se limite a rapporter un événement, était
+donc capable de faire échouer l'ingestion qu'elle rapportait. Les événements
+transportent désormais un instantané construit au moment de l'émission, ce qui
+supprime tout rechargement.
+
+Le second concerne la validation de l'autorisation des canaux. Les tests écrits
+pour vérifier qu'un espace ne peut pas s'abonner au canal d'un autre passaient
+tous. Ils ne prouvaient rien : la configuration de test emploie un pilote de
+diffusion neutre dont l'autorisation accepte tout. Les mêmes tests auraient
+continue à passer après suppression complète du fichier définissant les canaux.
+Ils ont été repris pour s'exécuter sur un pilote réel, et la vérification a été
+faite en retirant volontairement la jointure de cloisonnement afin de constater
+que le test échouait.
+
+\section{Module d'interface utilisateur}
+
+\subsection{Conception}
+
+L'interface applique la règle de séparation énoncée en introduction : les faits
+observes et l'interprétation ne sont jamais mélangés. La page de défaillance est
+construite autour de cette distinction, avec un panneau consacre à ce qui a été
+mesuré et un autre à ce que le modèle propose, ce dernier portant systématiquement
+son niveau de confiance, son coût et le modèle qui l'a produit.
+
+\subsection{Réalisation}
+
+L'application comporte une vingtaine de vues et repose sur un ensemble de
+composants de base partages. La visualisation des journaux emploie une liste
+virtualisée, un journal de plusieurs dizaines de milliers de lignes ne pouvant
+être rendu intégralement.
+
+Un incident de test mérite d'être rapporté, car il illustre un piège général. Un
+test de la liste virtualisée passait alors que le composant ne rendait aucune
+ligne. La cause tenait à un substitut d'environnement qui simulait
+l'observateur de redimensionnement en retournant une taille nulle : la liste
+concluait qu'aucune ligne n'était visible, n'en rendait aucune, et le test qui
+vérifiait l'absence d'erreur passait. Un test qui passe pour une mauvaise raison
+est plus dangereux qu'un test absent, puisqu'il inspiré une confiance non
+justifiée.
+
+\captureph{Tableau de bord d'un projet avec indicateurs et tendances}{fig:dashboard}{7.5cm}
+
+\captureph{Recherche globale et palette de commandes}{fig:palette}{6cm}
+
+\section{Qualité et résultats mesures}
+
+\subsection{Dispositif de qualité}
+
+Le tableau \ref{tab:tests} récapitule la couverture de tests au terme du projet.
+
+\begin{table}[htbp]
+\centering
+\caption{Répartition des tests automatises}
+\label{tab:tests}
+\small
+\begin{tabular}{@{}lccl@{}}
+\toprule
+\textbf{Service} & \textbf{Fichiers} & \textbf{Tests} & \textbf{Outils} \\
+\midrule
+Service applicatif & 41 & 342 & Pest, PHPStan niveau 5, Pint \\
+Service d'intelligence & 19 & 235 & Pytest, mypy strict, Ruff \\
+Interface & 7 & 47 & Vitest, vue-tsc \\
+\midrule
+\textbf{Total} & \textbf{67} & \textbf{624} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Le système représente environ 38 200 lignes de code applicatif réparties sur les
+trois services, 31 tables de domaine et 87 points d'entrée d'interface de
+programmation.
+
+Un choix de méthode mérite d'être signalé. L'analyse statique du service
+applicatif s'appuie sur une base de référence qui recense les avertissements
+préexistants et fait échouer la chaîne sur tout avertissement nouveau. Cette base
+est passée de 359 à 247 entrées au cours des derniers incréments, non par
+régénération mais par correction effective : le typage explicite des relations de
+l'ORM et des conversions d'énumérations a supprimé des centaines de faux
+positifs, ce qui a fait apparaître des signaux réels jusque-là noyés, notamment
+du code inatteignable et des comparaisons toujours fausses.
+
+\subsection{Résultats mesures}
+
+Le tableau \ref{tab:resultats} rassemble les mesures obtenues sur la plateforme
+en fonctionnement.
+
+\begin{table}[htbp]
+\centering
+\caption{Mesures relevées sur la plateforme}
+\label{tab:resultats}
+\small
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+\textbf{Indicateur} & \textbf{Source} & \textbf{Valeur} \\
+\midrule
+Coût moyen par appel & 36 appels réels, ledger \texttt{ai\_requests} & 0,00087 \$ \\
+Coût moyen par analyse & 7 défaillances, 7 catégories & 0,0015 \$ \\
+Latence médiane du modèle & Gemini 3.6 Flash & 4,65 s \\
+Latence médiane d'analyse & Mesure de bout en bout & 4,14 s \\
+Taux de réponses en cache & 3 sur 50 analyses & 6 \% \\
+Taux de regroupement & Défaillances par signature distincte & 3,22 \\
+Preuves référencées valides & 15 sur 15 & 100 \% \\
+Réponses JSON invalides & 7 analyses & 0 \\
+Concordance règles / modèle & 7 défaillances, 7 catégories & 7 sur 7 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Le taux de réponses en cache de 6 \% appelle un commentaire. Cette valeur est
+faible parce qu'un espace de travail récent ne possède pas encore d'historique :
+une réponse en cache suppose que la même signature ait déjà été analysée. Elle
+croît mécaniquement avec l'usage et ne constitue pas un régime permanent.
+
+\subsection{Ce que l'évaluation ne permet pas encore d'affirmer}
+
+Une part importante des indicateurs prévus n'a pas pu être mesurée. Ils partagent
+tous une même dépendance : une vérité de terrain que seul un humain produit.
+
+La F-mesure de classification exige un jeu de test étiqueté de huit cents
+exemples, alimenté par les corrections saisies dans l'interface. Aucune n'a
+encore été enregistrée.
+
+La courbe de calibration, c'est-a-dire la vérification que 90 \% de confiance
+correspond effectivement à 90 \% de réponses justes, exige cinquante causes
+racines validées manuellement et notées à l'aveugle. Aucune notation n'a été
+réalisée.
+
+L'apport réel de la récupération augmentée exige de comparer l'exactitude avec et
+sans, sur les mêmes défaillances notées.
+
+La précision de la détection d'anomalies exige que des utilisateurs marquent les
+fausses alertes. Six anomalies ont été enregistrées et aucune n'a été marquée
+comme fausse, ce qui traduit une absence de retour et non une précision parfaite.
+Présenter cette absence comme une précision de 100 \% serait la conclusion la plus
+trompeuse que ces données permettent de tirer.
+
+Un script d'évaluation a été écrit pour produire ces résultats à partir de la base
+en fonctionnement. Il calcule ce qui est calculable et, pour le reste, imprime la
+nature de la donnée manquante et le volume nécessaire, plutôt qu'une estimation.
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+Ce chapitre a décrit la partie du système qui agit et celle qui observe. La
+remédiation illustre le principe directeur du projet : le modèle propose, un
+moteur déterministe décide, et toute modification d'un dépôt passe par une
+proposition relue. La détection d'anomalies montre qu'un indicateur mal choisi
+produit un outil inutilisable, un tableau où vingt-deux travaux sur vingt-quatre
+sont signalés n'ayant pas plus de valeur qu'un tableau vide.
+
+Les mesures rassemblées établissent que la plateforme fonctionne dans les limites
+de coût et de latence visées. Elles établissent aussi, et c'est le point que la
+conclusion générale reprend, que son exactitude reste a valider.
+
+\clearpage
+
+% ============================================================================
+%  Conclusion Générale
+% ============================================================================
+\chapter*{Conclusion générale}
+\addcontentsline{toc}{chapter}{Conclusion générale}
+\markboth{Conclusion générale}{}
+
+Le projet PipeMind avait pour objectif de réduire l'écart entre la donnée brute
+produite par une chaîne d'intégration continue et la compréhension qu'un
+ingénieur doit en tirer. Au terme du stage, la plateforme réalise cette fonction
+de bout en bout : elle se connecte à GitLab, GitHub Actions et Jenkins, normalise
+leurs événements vers un modèle unique, détecte les défaillances, occulte les
+données sensibles, extrait le bloc d'erreur, le classe, recherche les
+défaillances passées comparables ainsi que la documentation de l'équipe, produit
+une cause probable accompagnée de preuves référencées, et propose lorsque c'est
+possible un correctif soumis à une politique que l'équipe définit.
+
+Le système représente environ 38 200 lignes réparties sur trois services, 31
+tables de domaine, 87 points d'entrée et 624 tests automatises. Les quatre limites
+identifiées dans l'étude de l'existant ont reçu une réponse concrète :
+l'abstraction des fournisseurs répond à l'enfermement, la signature de défaillance
+répond à l'absence de mémoire, l'enrichissement du dossier répond au résumé sans
+diagnostic, et la validation structurelle des références répond à l'affirmation
+non vérifiable.
+
+Sur le plan technique, l'enseignement le plus utile de ce travail ne vient pas des
+fonctionnalités livrées mais de la manière dont plusieurs défauts ont été
+découverts. Trois seuils avaient été fixés par analogie avec des valeurs
+couramment citées, et tous trois désactivaient silencieusement la fonction qu'ils
+étaient censés régler. La recherche d'historique ne retournait rien, la
+récupération documentaire ne retournait rien, et les fragments de documents
+étaient tronques avant d'être indexés. Aucun de ces défauts ne produisait
+d'erreur : ils rendaient simplement les réponses moins bonnes, ce qui est le mode
+de défaillance le plus difficile à remarquer et le plus facile à imputer à la
+qualité du modèle. La leçon retenue est qu'un seuil doit être accompagné de la
+mesure qui l'a produit, et qu'un chemin pouvant légitimement ne rien retourner
+exige un test capable de détecter qu'il ne retourne jamais rien.
+
+Le même constat vaut pour les tests eux-mêmes. A trois reprises, une suite de
+tests entièrement verte validait un comportement inexistant : un substitut
+d'environnement rendait une liste vide, un pilote de diffusion neutre autorisait
+tous les canaux, et des données de test construites sans retour à la ligne final
+évitaient le seul cas qui posait problème en production. Un test qui passe pour
+une mauvaise raison est plus dangereux qu'un test absent.
+
+Les limites du travail doivent être enoncées sans détour. L'exactitude de la
+plateforme n'est pas validée. Le classifieur appris n'a pas pu être entraîné
+faute d'exemples étiquetés, la courbe de calibration n'a pas pu être tracée faute
+de causes racines notées, l'apport de la récupération augmentée n'a pas pu être
+quantifié en exactitude, et la précision de la détection d'anomalies reste
+inconnue faute de retour utilisateur. Ces manques ne relèvent pas d'un défaut de
+conception mais d'une caractéristique du sujet : la plateforme apprend de l'usage,
+et l'usage demande du temps. Par ailleurs, le jeu de données exploite provient
+majoritairement d'un environnement contrôle, ce qui laisse la généralisation à des
+contextes industriels non demontrée. Enfin, la remédiation a été volontairement
+limitée à des actions réversibles ou soumises à relecture ; les actions touchant
+un environnement de production ont été conçues puis explicitement interdites.
+
+Plusieurs prolongements se dessinent naturellement. Le plus immédiat consiste à
+accumuler des corrections et des notations afin de rendre mesurables les
+indicateurs aujourd'hui inaccessibles, ce qui débloquerait simultanément le
+classifieur appris et la courbe de calibration. Une comparaison entre un modèle
+hébergé et un modèle local permettrait ensuite de documenter le compromis entre
+coût, latence et confidentialité pour les organisations qui ne peuvent transmettre
+aucune donnée à un tiers. Enfin, la diffusion des notifications vers les canaux de
+communication des équipes, avec regroupement par signature afin que six exécutions
+en échec sur un même problème produisent un seul message, constitue une extension
+directe des mécanismes déjà en place.
+
+Sur le plan personnel, ce stage a été l'occasion de conduire un projet complet, de
+la lecture du besoin jusqu'à la mesure du résultat, en assumant les décisions
+d'architecture et en documentant les erreurs autant que les réussites. La
+compétence la plus durable qu'il m'aura apportée n'est pas la maîtrise d'une
+technologie particulière, mais l'habitude de me demander, devant un système qui
+semble fonctionner, comment je saurais qu'il ne fonctionne pas.
+
+\clearpage
+
+% ============================================================================
+%  BIBLIOGRAPHIE
+% ============================================================================
+\chapter*{Bibliographie}
+\addcontentsline{toc}{chapter}{Bibliographie}
+\markboth{Bibliographie}{}
+
+\begin{enumerate}[label={[\arabic*]},leftmargin=*]
+\item Lewis P. et al., \textit{Retrieval-Augmented Génération for Knowledge-Intensive NLP Tasks}, Advances in Neural Information Processing Systems, 2020.
+\item Reimers N., Gurevych I., \textit{Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks}, EMNLP, 2019.
+\item Malkov Y., Yashunin D., \textit{Efficient and Robust Approximate Nearest Neighbor Search using Hierarchical Navigable Small World Graphs}, IEEE TPAMI, 2020.
+\item Leys C. et al., \textit{Detecting Outliers: Do Not Use Standard Deviation Around the Mean, Use Absolute Deviation Around the Médian}, Journal of Expérimental Social Psychology, 2013.
+\item Evans E., \textit{Domain-Driven Design: Tackling Complexity in the Heart of Software}, Addison-Wesley, 2003.
+\item Humble J., Farley D., \textit{Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation}, Addison-Wesley, 2010.
+\item Forsgren N., Humble J., Kim G., \textit{Accelerate: The Science of Lean Software and DevOps}, IT Revolution Press, 2018.
+\item Documentation officielle Laravel, \url{https://laravel.com/docs}, consultée en 2026.
+\item Documentation officielle FastAPI, \url{https://fastapi.tiangolo.com}, consultée en 2026.
+\item Documentation de l'extension pgvector, \url{https://github.com/pgvector/pgvector}, consultée en 2026.
+\item Documentation GitLab Webhooks et API, \url{https://docs.gitlab.com/ee/api}, consultée en 2026.
+\item Documentation GitHub REST API et Webhooks, \url{https://docs.github.com/rest}, consultée en 2026.
+\end{enumerate}
+
+\end{document}

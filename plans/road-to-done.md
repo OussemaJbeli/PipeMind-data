@@ -69,7 +69,7 @@ reaching the prompt for the first time — measured, the same failure went from
 "verify database service readiness" to "add a healthcheck and wait for
 `condition: service_healthy`".
 
-### Phase B — remediation *(the biggest remaining feature)*
+### Phase B — remediation — ✅ **done 2026-09-07**
 
 4. **File 18.** This is where the patches you liked actually get applied, so it
    is the natural payoff of the code-aware analysis work — and the reason I now
@@ -91,9 +91,29 @@ reaching the prompt for the first time — measured, the same failure went from
      expired approval will not execute, tightening a policy cancels an approved
      but unexecuted remediation.
 
-   **Risk to respect:** this is the first code that changes your repositories.
-   Every executor needs a dry-run path and a test that proves it refuses when the
-   policy says no.
+   **Delivered.** All eight DoD invariants have tests. 60 new backend tests
+   (317 total), plus 6 in the AI service for the promotion rule.
+
+   Two findings worth carrying forward:
+
+   - **Every real recommendation was unexecutable.** All 44 in the database
+     arrived as `edit_file` or `update_config`, neither of which has an executor
+     — so an applyable patch could never become a pull request. `sanitize()` now
+     promotes a patch-bearing recommendation to `create_merge_request`, keeping
+     the higher of the two risks so the gate cannot be relaxed by the promotion.
+   - **A 403 from GitHub with no rate-limit header was reported as a rate
+     limit**, because `(int) null === 0`. A read-only token is the most common
+     403 here, so the message sent people away to wait instead of widening the
+     token's scope.
+
+   PHPStan's baseline shrank from 359 entries to 263: typing the Eloquent
+   relations and enum casts these services traverse fixed 96 previously
+   acknowledged errors rather than adding new ones.
+
+   **Not yet demonstrated live:** the promotion rule is unit-tested but the
+   end-to-end run is pending — `gemini-3.6-flash` returned 503 (capacity) on
+   every attempt. Worth re-running once Google has capacity, since it is the
+   most convincing thing in the product.
 
 ### Phase C — liveness
 
@@ -173,26 +193,27 @@ report is the deliverable).
 ```
 ✅ 01  ✅ 02  ✅ 03  ✅ 04  ✅ 05  ✅ 05b  ✅ 06  ✅ 07
 🟡 08  ✅ 09  ✅ 10  ✅ 11  ✅ 12  ✅ 13  ✅ 14  ✅ 15  ✅ 16
-🔴 17  🔴 18  ✅ 19  🟡 20  🟡 21  🟡 22  🔴 23
+🔴 17  ✅ 18  ✅ 19  🟡 20  🟡 21  🟡 22  🔴 23
 
-M1 ✅   M2 ✅   M3 ✅   M4 ✅   M5 🔴 (needs 17, 18, 20)
+M1 ✅   M2 ✅   M3 ✅   M4 ✅   M5 🟡 (needs 17, 20)
 ```
 
-**18's foundations are already in place** — the schema is fully designed and the
-work is behaviour on a finished data model: a nine-state machine
-(`RemediationStatus`), a policy table carrying mode / max_risk / min_confidence /
-max_per_day / allowed and blocked branches, and a remediations table with the
-whole approval audit trail, expiry and outcome tracking. `RemediationPolicy`,
-`Remediation`, and three typed exceptions exist. Missing: the evaluator, the five
-executors, the two jobs, the controller and routes, and the views.
+**18 is complete**, including the parts 17 would have made live: the remediation
+list polls while anything is in flight and stops when nothing is, so the only
+thing realtime adds here is removing that polling.
+
+**Next is 17 (realtime) or 20 (notifications).** 17 is the smaller of the two and
+mostly removes polling that already works; 20.1's dedupe-by-signature is the
+piece with real user value — six pipelines failing on one signature should
+produce one message, not six.
 
 - **08** — rules complete and verified; ML half hard-blocked on data.
 - **20** — search and palette done; notifications and assistant not started.
 - **21** — all gates configured and green; Playwright outstanding.
 - **22** — CI done for all four repos; deployment deferred by choice.
 
-**522 tests green** across three services (256 Laravel, 229 Python, 37
+**590 tests green** across three services (317 Laravel, 235 Python, 38
 frontend), `pint` · `phpstan` · `ruff` · `mypy` · `vue-tsc` · `composer audit`
-all clean. PHPStan's baseline shrank by 3 entries rather than growing: typing two
-relations and three `immutable_datetime` casts fixed real false positives instead
-of acknowledging them.
+all clean. PHPStan's baseline shrank from 362 entries to 263 across Phases A and
+B: typing the Eloquent relations and enum casts these services traverse fixed
+real false positives instead of acknowledging them.

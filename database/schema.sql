@@ -465,6 +465,15 @@ CREATE TABLE recommendations (
     position       SMALLINT NOT NULL DEFAULT 0,
     status         VARCHAR(20) NOT NULL DEFAULT 'proposed'
                    CHECK (status IN ('proposed','accepted','rejected','applied','failed','expired')),
+    -- The policy gate, stored at persist time so the failure page can render
+    -- "Approve" versus "Not allowed" without evaluating a policy per row. A
+    -- cache of a decision, never the authority for one: ExecuteRemediation
+    -- re-evaluates before acting, because an approval granted an hour ago must
+    -- not run under a policy that has since been tightened. NULL means the gate
+    -- was never evaluated, which the UI must not read as permission.
+    policy_decision VARCHAR(20)
+                   CHECK (policy_decision IN ('auto_allowed','requires_approval','forbidden')),
+    policy_reason  VARCHAR(255),
     decided_by     BIGINT REFERENCES users(id) ON DELETE SET NULL,
     decided_at     TIMESTAMPTZ,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
